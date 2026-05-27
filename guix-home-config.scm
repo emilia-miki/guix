@@ -6,10 +6,12 @@
   #:use-module (gnu services)
   #:use-module (guix gexp)
   #:use-module (gnu system shadow)
+  #:use-module (asahi guix home config)
   #:use-module (asahi guix home services sound))
 
 (define home-config
   (home-environment
+    (inherit asahi-home-environment)
     (services
       (append
         (list
