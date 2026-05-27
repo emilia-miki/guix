@@ -23,10 +23,11 @@
           (service home-dbus-service-type)
           (service home-pipewire-service-type)
 
-          (simple-service 'dark-theme
+          (simple-service 'session-environment
             home-environment-variables-service-type
             '(("QT_STYLE_OVERRIDE" . "Adwaita-Dark")
-            ("GTK_THEME" . "Adwaita:dark")))
+              ("GTK_THEME" . "Adwaita:dark")
+              ("ELECTRON_OZONE_PLATFORM_HINT" . "auto")))
 
           (service home-files-service-type
             `((".config/gtk-3.0/settings.ini"
