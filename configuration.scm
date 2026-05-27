@@ -47,6 +47,7 @@
   (gnu packages xdisorg)
   (gnu services desktop)
   (guix packages)
+  (packages claude-code)
   (packages feishin)
   (srfi srfi-1))
 
@@ -75,6 +76,7 @@
       direnv
       tree
       rlwrap
+      claude-code
       hyperfine
       ripgrep
       ripgrep-all
