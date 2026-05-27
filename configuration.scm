@@ -18,6 +18,7 @@
   (gnu packages fcitx5)
   (gnu packages firmware)
   (gnu packages fonts)
+  (gnu packages freedesktop)
   (gnu packages games)
   (gnu packages gimp)
   (gnu packages gnome)
@@ -45,10 +46,28 @@
   (gnu packages vpn)
   (gnu packages wm)
   (gnu packages xdisorg)
+  (gnu packages display-managers)
+  (gnu services cups)
   (gnu services desktop)
+  (gnu services sddm)
   (guix packages)
   (packages claude-code)
+  (packages dua)
+  (packages dust)
+  (packages fcitx5-rose-pine)
   (packages feishin)
+  (packages foliate)
+  (packages glow)
+  (packages marksman)
+  (packages mprocs)
+  ;; (packages newsflash)     ;; requires glib >= 2.87, channel has 2.86.0
+  (packages presenterm)
+  (packages sddm-rose-pine)
+  (packages skate)
+  (packages uutils-coreutils)
+  (packages wiki-tui)
+  (packages xh)
+  (packages yazi)
   (srfi srfi-1))
 
 (operating-system
@@ -64,7 +83,12 @@
   (services
     (cons* (service tailscale-service-type)
            (service bluetooth-service-type)
-           (operating-system-user-services asahi-sway-os)))
+           (service cups-service-type)
+           (modify-services (operating-system-user-services asahi-sway-os)
+             (sddm-service-type config =>
+               (sddm-configuration
+                 (inherit config)
+                 (theme "rose-pine"))))))
   (packages
     (cons*
       ;; browsers
@@ -109,11 +133,18 @@
       ;; sway / wayland
       wmenu  ;; temporary, replace with wofi?
       swayidle
+      swaylock
       waybar
       grim
       slurp
       mako
       fcitx5
+      fcitx5-gtk
+      fcitx5-gtk4
+      fcitx5-anthy
+      fcitx5-hangul
+      fcitx5-rose-pine
+      xdg-desktop-portal-gtk
       wl-clipboard
       playerctl
       zathura
@@ -123,8 +154,26 @@
       openresolv
       tailscale
 
+      ;; CLI tools
+      glow
+      skate
+      marksman
+      yazi
+      wiki-tui
+      dust
+      dua
+      uutils-coreutils
+      xh
+      mprocs
+      presenterm
+
+      ;; login
+      sddm-rose-pine-theme
+
       ;; GUI apps
       feishin
+      ;; newsflash    ;; requires glib >= 2.87, channel has 2.86.0
+      foliate
       moonlight-qt
       dolphin
       drawing
