@@ -27,17 +27,19 @@
               ("GTK_IM_MODULE" . "fcitx")
               ("QT_IM_MODULE" . "fcitx")
               ("XMODIFIERS" . "@im=fcitx")
-              ("SDL_IM_MODULE" . "fcitx")))
+              ("SDL_IM_MODULE" . "fcitx")
+              ("XCURSOR_THEME" . "Adwaita")
+              ("XCURSOR_SIZE" . "24")))
 
           (service home-files-service-type
             `((".config/gtk-3.0/settings.ini"
                ,(plain-file "gtk-settings.ini"
-                  "[Settings]\ngtk-application-prefer-dark-theme=1\n"))
+                  "[Settings]\ngtk-application-prefer-dark-theme=1\ngtk-cursor-theme-name=Adwaita\ngtk-cursor-theme-size=24\n"))
               (".Xdefaults" ,%default-xdefaults)
               (".guile" ,%default-dotguile)
               (".config/gtk-4.0/settings.ini"
                ,(plain-file "gtk-settings.ini"
-                  "[Settings]\ngtk-application-prefer-dark-theme=1\n"))
+                  "[Settings]\ngtk-application-prefer-dark-theme=1\ngtk-cursor-theme-name=Adwaita\ngtk-cursor-theme-size=24\n"))
               (".config/starship.toml"
                ,(plain-file "starship.toml"
                   "[character]\nsuccess_symbol = '[λ](bold green)'\nerror_symbol = '[λ](bold red)'\n"))

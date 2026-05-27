@@ -145,6 +145,7 @@
       fcitx5-hangul
       fcitx5-rose-pine
       xdg-desktop-portal-gtk
+      adwaita-icon-theme
       wl-clipboard
       playerctl
       zathura
