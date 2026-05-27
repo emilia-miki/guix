@@ -22,15 +22,15 @@
 (define-public feishin
   (package
     (name "feishin")
-    (version "0.12.1")
+    (version "1.12.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "https://github.com/jeffvli/feishin/releases/download/v"
-               version "/Feishin-" version "-linux-arm64.tar.xz"))
+               version "/Feishin-linux-arm64.tar.xz"))
         (sha256
-          (base32 "1mcxl7gfsq61lfr4mmjalih86c8rpl47bjfhy530c2wjj0l2mlrr"))))
+          (base32 "1smq1d1hljpxlgwppy7mjnbqr8k8v59l749sy6zdgsfqda7wm3ra"))))
     (build-system gnu-build-system)
     (inputs
       (list glibc
