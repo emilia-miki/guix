@@ -104,6 +104,29 @@
                   (list (string-append lib "/feishin")
                         (string-append lib "/chrome-sandbox")
                         (string-append lib "/chrome_crashpad_handler")))
+                ;; install icons
+                (for-each
+                  (lambda (size)
+                    (let* ((icon-dir (string-append out "/share/icons/hicolor/"
+                                                    size "x" size "/apps"))
+                           (src (string-append lib "/resources/assets/icons/"
+                                               size "x" size ".png")))
+                      (mkdir-p icon-dir)
+                      (copy-file src (string-append icon-dir "/feishin.png"))))
+                  '("32" "64" "128" "256" "512" "1024"))
+                ;; install .desktop file
+                (let ((apps (string-append out "/share/applications")))
+                  (mkdir-p apps)
+                  (call-with-output-file (string-append apps "/feishin.desktop")
+                    (lambda (port)
+                      (format port "[Desktop Entry]~%")
+                      (format port "Name=Feishin~%")
+                      (format port "Comment=Modern self-hosted music player~%")
+                      (format port "Exec=feishin~%")
+                      (format port "Icon=feishin~%")
+                      (format port "Terminal=false~%")
+                      (format port "Type=Application~%")
+                      (format port "Categories=Audio;Music;AudioVideo;~%"))))
                 ;; create wrapper script
                 (call-with-output-file (string-append bin "/feishin")
                   (lambda (port)
