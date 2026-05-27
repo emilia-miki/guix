@@ -1,106 +1,175 @@
-  (use-modules (asahi guix systems sway) (gnu) (srfi srfi-1) (guix packages) (btv tailscale) (gnu packages librewolf) (gnu packages chromium) (gnu packages) (gnu packages text-editors) (gnu packages wm) (gnu packages tmux) (gnu packages image) (gnu packages fcitx5) (gnu packages xdisorg) (gnu packages music) (gnu packages nushell) (gnu packages vpn) (gnu packages dns) (asahi guix packages linux) (gnu packages fonts) (gnu packages linux) (gnu services desktop) (gnu packages pulseaudio) (gnu packages racket) (gnu packages shellutils) (gnu packages admin) (gnu packages readline) (gnu packages audio) (gnu packages rust-apps) (gnu packages video) (gnu packages compression) (gnu packages autotools) (gnu packages cmake) (gnu packages llvm) (gnu packages firmware) (gnu packages pdf) (gnu packages games) (gnu packages kde-systemtools) (gnu packages gnome) (gnu packages vnc) (gnu packages networking) (gnu packages bittorrent) (gnu packages graphics) (gnu packages gimp) (gnu packages kde-graphics) (gnu packages education) (gnu packages version-control))
+(define-module (configuration))
 
-  (operating-system
-    (inherit asahi-sway-os)
-    (timezone "Europe/Kyiv")
-    (users (cons* (user-account
-                    (name "miki")
-                    (group "users")
-                    (supplementary-groups '("wheel" "audio" "video" "input" "netdev"))
-                    (home-directory "/home/miki"))
-                   %base-user-accounts))
-    (services (cons*  (service tailscale-service-type)
-                      (service bluetooth-service-type)
-                      (operating-system-user-services asahi-sway-os)))
-    (packages (cons*  librewolf
-                      (specification->package "ungoogled-chromium-wayland")
-                      wmenu ;; temporary, replace with wofi?
-                      git
-                      bluez
-                      pavucontrol
-                      racket
-                      direnv
-                      tree
-                      rlwrap
-                      cava
-                      tree
-                      hyperfine
-                      ffmpeg
-                      yt-dlp
-                      unzip
-                      libtool
-                      cmake
-                      clang
-                      ripgrep
-                      ripgrep-all
-                      eza
-                      nushell
-                      bat
-                      gitui
-                      starship
-                      tokei
-                      zoxide
-                      fd
-                      inotify-tools
-                      qmk
+(use-modules
+  (asahi guix systems sway)
+  (asahi guix packages linux)
+  (btv tailscale)
+  (gnu)
+  (gnu packages)
+  (gnu packages admin)
+  (gnu packages audio)
+  (gnu packages autotools)
+  (gnu packages bittorrent)
+  (gnu packages chromium)
+  (gnu packages cmake)
+  (gnu packages compression)
+  (gnu packages dns)
+  (gnu packages education)
+  (gnu packages fcitx5)
+  (gnu packages firmware)
+  (gnu packages fonts)
+  (gnu packages games)
+  (gnu packages gimp)
+  (gnu packages gnome)
+  (gnu packages graphics)
+  (gnu packages image)
+  (gnu packages kde-graphics)
+  (gnu packages kde-systemtools)
+  (gnu packages librewolf)
+  (gnu packages linux)
+  (gnu packages llvm)
+  (gnu packages music)
+  (gnu packages networking)
+  (gnu packages nushell)
+  (gnu packages pdf)
+  (gnu packages pulseaudio)
+  (gnu packages racket)
+  (gnu packages readline)
+  (gnu packages rust-apps)
+  (gnu packages shellutils)
+  (gnu packages text-editors)
+  (gnu packages tmux)
+  (gnu packages version-control)
+  (gnu packages video)
+  (gnu packages vnc)
+  (gnu packages vpn)
+  (gnu packages wm)
+  (gnu packages xdisorg)
+  (gnu services desktop)
+  (guix packages)
+  (packages feishin)
+  (srfi srfi-1))
 
-                      swayidle
-                      zathura
+(operating-system
+  (inherit asahi-sway-os)
+  (timezone "Europe/Kyiv")
+  (users
+    (cons* (user-account
+             (name "miki")
+             (group "users")
+             (supplementary-groups '("wheel" "audio" "video" "input" "netdev"))
+             (home-directory "/home/miki"))
+           %base-user-accounts))
+  (services
+    (cons* (service tailscale-service-type)
+           (service bluetooth-service-type)
+           (operating-system-user-services asahi-sway-os)))
+  (packages
+    (cons*
+      ;; browsers
+      librewolf
+      (specification->package "ungoogled-chromium-wayland")
 
-                      ;; GUI software
-                      moonlight-qt
-                      dolphin
-                      drawing
-                      (@ (gnu packages gnome-circle) polari)
-                      remmina
-                      wireshark
-                      vlc
-                      mpv
-                      qbittorrent
-                      obs
-                      papers
-                      audacity
-                      blender
-                      gimp
-                      ;; krita
-                      klavaro
+      ;; terminal tools
+      git
+      direnv
+      tree
+      rlwrap
+      hyperfine
+      ripgrep
+      ripgrep-all
+      eza
+      nushell
+      bat
+      gitui
+      starship
+      tokei
+      zoxide
+      fd
+      inotify-tools
+      tmux
+      helix
 
-                      font-awesome
-                      font-nerd-fira-code
-                      font-google-noto          ;; noto-fonts
-                      font-google-noto-sans-cjk ;; noto-fonts-cjk-sans
-                      font-google-noto-serif-cjk ;; noto-fonts-cjk-serif
-                      font-google-noto-emoji    ;; noto-fonts-color-emoji
-                      font-dejavu               ;; dejavu_fonts
-                      font-gnu-unifont              ;; unifont
-                      font-ipa                  ;; ipafont
-                      font-ipa-ex               ;; kochi-substitute equivalent
-                      font-bitstream-vera       ;; ttf_bitstream_vera
-                      ;; carlito, source-code-pro — check guix names
-                      openvpn
-                      openresolv
-                      helix
-                      waybar
-                      tmux
-                      nushell
-                      grim
-                      slurp
-                      mako
-                      fcitx5
-                      wl-clipboard
-                      playerctl
-                      tailscale
-                      (remove (lambda (p)
-                        (equal? "kitty" (package-name p)))
-                      (operating-system-packages asahi-sway-os))))
-    (file-systems (cons* (file-system
-                           (device (uuid "848E-1AEE" 'fat32))
-                           (mount-point "/boot/efi")
-                           (needed-for-boot? #t)
-                           (type "vfat"))
-                         (file-system
-                           (device (file-system-label "asahi-guix-root"))
-                           (mount-point "/")
-                           (needed-for-boot? #t)
-                           (type "btrfs"))
-                         %base-file-systems)))
+      ;; multimedia
+      ffmpeg
+      yt-dlp
+      cava
+      mpv
+      vlc
+      audacity
+
+      ;; build tools
+      unzip
+      libtool
+      cmake
+      clang
+
+      ;; sway / wayland
+      wmenu  ;; temporary, replace with wofi?
+      swayidle
+      waybar
+      grim
+      slurp
+      mako
+      fcitx5
+      wl-clipboard
+      playerctl
+      zathura
+
+      ;; network
+      openvpn
+      openresolv
+      tailscale
+
+      ;; GUI apps
+      feishin
+      moonlight-qt
+      dolphin
+      drawing
+      (@ (gnu packages gnome-circle) polari)
+      remmina
+      wireshark
+      qbittorrent
+      obs
+      papers
+      blender
+      gimp
+      ;; krita
+      klavaro
+
+      ;; languages / runtimes
+      racket
+      qmk
+
+      ;; system
+      bluez
+      pavucontrol
+
+      ;; fonts
+      font-awesome
+      font-nerd-fira-code
+      font-google-noto           ;; noto-fonts
+      font-google-noto-sans-cjk  ;; noto-fonts-cjk-sans
+      font-google-noto-serif-cjk ;; noto-fonts-cjk-serif
+      font-google-noto-emoji     ;; noto-fonts-color-emoji
+      font-dejavu                ;; dejavu_fonts
+      font-gnu-unifont           ;; unifont
+      font-ipa                   ;; ipafont
+      font-ipa-ex                ;; kochi-substitute equivalent
+      font-bitstream-vera        ;; ttf_bitstream_vera
+      ;; carlito, source-code-pro — check guix names
+
+      (remove (lambda (p) (equal? "kitty" (package-name p)))
+              (operating-system-packages asahi-sway-os))))
+  (file-systems
+    (cons* (file-system
+             (device (uuid "848E-1AEE" 'fat32))
+             (mount-point "/boot/efi")
+             (needed-for-boot? #t)
+             (type "vfat"))
+           (file-system
+             (device (file-system-label "asahi-guix-root"))
+             (mount-point "/")
+             (needed-for-boot? #t)
+             (type "btrfs"))
+           %base-file-systems)))
