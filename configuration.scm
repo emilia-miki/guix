@@ -96,6 +96,11 @@
     (cons* (service tailscale-service-type)
            (service bluetooth-service-type)
            (service cups-service-type)
+           (simple-service 'extra-hosts
+             hosts-service-type
+             (list
+               (host "REDACTED_IP_1" "REDACTED_HOST_1")
+               (host "REDACTED_IP_2" "REDACTED_HOST_2")))
            (modify-services (operating-system-user-services asahi-plasma-os)
              (sddm-service-type config =>
                (sddm-configuration
