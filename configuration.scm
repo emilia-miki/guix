@@ -65,7 +65,8 @@
   (packages glow)
   (packages marksman)
   (packages mprocs)
-  ;; (packages newsflash)     ;; requires glib >= 2.87, channel has 2.86.0
+  (packages clapper)
+  (packages newsflash)
   (packages presenterm)
   (packages sddm-qylock)
   (packages skate)
@@ -128,6 +129,7 @@
       inotify-tools
       tmux
       helix
+      bind:utils
 
       ;; multimedia
       ffmpeg
@@ -189,7 +191,7 @@
 
       ;; GUI apps
       feishin
-      ;; newsflash    ;; requires glib >= 2.87, channel has 2.86.0
+      newsflash
       foliate
       moonlight-qt
       dolphin
@@ -241,4 +243,12 @@
              (mount-point "/")
              (needed-for-boot? #t)
              (type "btrfs"))
-           %base-file-systems)))
+           (file-system
+             (device (file-system-label "asahi-guix-root")
+             (mount-point "/swap")
+             (type "btrfs")
+             (options "subvol=swap,nodatacow")
+             (needed-for-boot? #f)))
+           %base-file-systems))
+  (swap-devices
+    (list (swap-space (target "/swap/swapfile")))))
