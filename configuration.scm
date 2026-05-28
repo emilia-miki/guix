@@ -56,6 +56,7 @@
   (gnu services sddm)
   (gnu system locale)
   (guix packages)
+  (packages blender)
   (packages claude-code)
   (packages dua)
   (packages dust)
@@ -207,7 +208,7 @@
       qbittorrent
       obs
       papers
-      blender
+      blender-wayland
       gimp
       ;; krita
       klavaro
