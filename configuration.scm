@@ -67,7 +67,6 @@
   (packages dust)
   (packages fcitx5-rose-pine)
   (packages feishin)
-  (packages foliate)
   (packages glow)
   (packages marksman)
   (packages mprocs)
@@ -234,7 +233,6 @@
       ;; GUI apps
       feishin
       newsflash
-      foliate
       moonlight-qt
       dolphin
       drawing
