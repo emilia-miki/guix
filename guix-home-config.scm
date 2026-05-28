@@ -22,17 +22,6 @@
           (service home-dbus-service-type)
           (service home-pipewire-service-type)
 
-          (simple-service 'environment-vars
-            home-environment-variables-service-type
-            '(("QT_STYLE_OVERRIDE" . "Adwaita-Dark")
-              ("GTK_THEME" . "Adwaita:dark")
-              ("GTK_IM_MODULE" . "fcitx")
-              ("QT_IM_MODULE" . "fcitx")
-              ("XMODIFIERS" . "@im=fcitx")
-              ("SDL_IM_MODULE" . "fcitx")
-              ("XCURSOR_THEME" . "Adwaita")
-              ("XCURSOR_SIZE" . "24")))
-
           (service home-files-service-type
             `((".config/gtk-3.0/settings.ini"
                ,(plain-file "gtk-settings.ini"

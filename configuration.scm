@@ -1,6 +1,7 @@
 (define-module (configuration))
 
 (use-modules
+  (asahi guix systems plasma)
   (asahi guix systems sway)
   (asahi guix packages linux)
   (btv tailscale)
@@ -13,9 +14,11 @@
   (gnu packages chromium)
   (gnu packages cmake)
   (gnu packages compression)
+  (gnu packages curl)
   (gnu packages dns)
   (gnu packages education)
   (gnu packages fcitx5)
+  (gnu packages file)
   (gnu packages firmware)
   (gnu packages fonts)
   (gnu packages freedesktop)
@@ -34,6 +37,7 @@
   (gnu packages nushell)
   (gnu packages pdf)
   (gnu packages pulseaudio)
+  (gnu packages qt)
   (gnu packages racket)
   (gnu packages readline)
   (gnu packages rust-apps)
@@ -50,6 +54,7 @@
   (gnu services cups)
   (gnu services desktop)
   (gnu services sddm)
+  (gnu system locale)
   (guix packages)
   (packages claude-code)
   (packages dua)
@@ -62,7 +67,7 @@
   (packages mprocs)
   ;; (packages newsflash)     ;; requires glib >= 2.87, channel has 2.86.0
   (packages presenterm)
-  (packages sddm-rose-pine)
+  (packages sddm-qylock)
   (packages skate)
   (packages uutils-coreutils)
   (packages wiki-tui)
@@ -71,8 +76,14 @@
   (srfi srfi-1))
 
 (operating-system
-  (inherit asahi-sway-os)
+  ;; (inherit asahi-sway-os)
+  (inherit asahi-plasma-os)
   (timezone "Europe/Kyiv")
+  (locale "en_DK.UTF-8")
+  (locale-definitions
+    (cons* (locale-definition (name "en_DK.UTF-8") (source "en_DK"))
+           (locale-definition (name "en_IE.UTF-8") (source "en_IE"))
+           %default-locale-definitions))
   (users
     (cons* (user-account
              (name "miki")
@@ -84,11 +95,11 @@
     (cons* (service tailscale-service-type)
            (service bluetooth-service-type)
            (service cups-service-type)
-           (modify-services (operating-system-user-services asahi-sway-os)
+           (modify-services (operating-system-user-services asahi-plasma-os)
              (sddm-service-type config =>
                (sddm-configuration
                  (inherit config)
-                 (theme "rose-pine"))))))
+                 (theme "enfield"))))))
   (packages
     (cons*
       ;; browsers
@@ -96,6 +107,8 @@
       (specification->package "ungoogled-chromium-wayland")
 
       ;; terminal tools
+      file
+      curl
       git
       direnv
       tree
@@ -144,6 +157,7 @@
       fcitx5-anthy
       fcitx5-hangul
       fcitx5-rose-pine
+      fcitx5-configtool
       xdg-desktop-portal-gtk
       adwaita-icon-theme
       wl-clipboard
@@ -169,7 +183,9 @@
       presenterm
 
       ;; login
-      sddm-rose-pine-theme
+      sddm-qylock-enfield
+      qt5compat
+      qtmultimedia
 
       ;; GUI apps
       feishin
@@ -196,6 +212,7 @@
       ;; system
       bluez
       pavucontrol
+      power-profiles-daemon
 
       ;; fonts
       font-awesome
