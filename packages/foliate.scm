@@ -24,7 +24,24 @@
           (base32 "0wmn9nf4jhjwkwdh8nlacfzpxdz9vx3p3mi5mxbjwsj26h5crl09"))))
     (build-system meson-build-system)
     (arguments
-      `(#:configure-flags '("-Dcheck_runtime_deps=false")))
+      `(#:configure-flags '("-Dcheck_runtime_deps=false")
+        #:phases
+        (modify-phases %standard-phases
+          (add-after 'install 'wrap-typelibs
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (dirs (let lp ((in inputs) (acc '()))
+                             (if (null? in)
+                                 (reverse acc)
+                                 (let ((d (string-append (cdar in)
+                                                         "/lib/girepository-1.0")))
+                                   (lp (cdr in)
+                                       (if (file-exists? d)
+                                           (cons d acc)
+                                           acc))))))
+                     (gi-path (string-join dirs ":")))
+                (wrap-program (string-append out "/bin/foliate")
+                  `("GI_TYPELIB_PATH" ":" prefix (,gi-path)))))))))
     (native-inputs
       (list pkg-config glib `(,glib "bin") gnu-gettext `(,gtk "bin") desktop-file-utils))
     (inputs

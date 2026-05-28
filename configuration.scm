@@ -28,7 +28,12 @@
   (gnu packages graphics)
   (gnu packages image)
   (gnu packages kde-graphics)
+  (gnu packages kde-internet)
+  (gnu packages kde-plasma)
+  (gnu packages kde-multimedia)
+  (gnu packages kde-pim)
   (gnu packages kde-systemtools)
+  (gnu packages kde-utils)
   (gnu packages librewolf)
   (gnu packages linux)
   (gnu packages llvm)
@@ -72,6 +77,7 @@
   (packages sddm-qylock)
   (packages skate)
   (packages uutils-coreutils)
+  (packages vlc)
   (packages wiki-tui)
   (packages xh)
   (packages yazi)
@@ -102,6 +108,10 @@
              (list
                (host "REDACTED_IP_1" "REDACTED_HOST_1")
                (host "REDACTED_IP_2" "REDACTED_HOST_2")))
+           (simple-service 'wayland-env
+             session-environment-service-type
+             '(("QT_QPA_PLATFORM" . "wayland")
+               ("GDK_BACKEND" . "wayland,x11")))
            (modify-services (operating-system-user-services asahi-plasma-os)
              (sddm-service-type config =>
                (sddm-configuration
@@ -142,7 +152,7 @@
       yt-dlp
       cava
       mpv
-      vlc
+      vlc-wayland
       audacity
 
       ;; build tools
@@ -194,6 +204,33 @@
       sddm-qylock-enfield
       qt5compat
       qtmultimedia
+
+      ;; KDE apps
+      ark
+      kate
+      kcalc
+      kfind
+      filelight
+      kdeconnect
+      kleopatra
+      gwenview
+      okular
+      haruna
+      kamoso
+      kmail
+      korganizer
+      merkuro
+      kaddressbook
+      kaccounts-integration
+      kaccounts-providers
+      kalarm
+      neochat
+      kget
+      krdc
+      kdegraphics-thumbnailers
+      kcolorchooser
+      kcharselect
+      plasma-browser-integration
 
       ;; GUI apps
       feishin
