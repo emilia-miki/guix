@@ -129,7 +129,7 @@
       inotify-tools
       tmux
       helix
-      bind:utils
+      (list isc-bind "utils") ;; provides nslookup, dig, host
 
       ;; multimedia
       ffmpeg
@@ -244,11 +244,11 @@
              (needed-for-boot? #t)
              (type "btrfs"))
            (file-system
-             (device (file-system-label "asahi-guix-root")
+             (device (file-system-label "asahi-guix-root"))
              (mount-point "/swap")
              (type "btrfs")
              (options "subvol=swap,nodatacow")
-             (needed-for-boot? #f)))
+             (needed-for-boot? #f))
            %base-file-systems))
   (swap-devices
     (list (swap-space (target "/swap/swapfile")))))
