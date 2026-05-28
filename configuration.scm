@@ -239,7 +239,6 @@
       dolphin
       drawing
       (@ (gnu packages gnome-circle) polari)
-      remmina
       wireshark
       qbittorrent
       obs
