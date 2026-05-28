@@ -81,6 +81,7 @@
   (packages wiki-tui)
   (packages xh)
   (packages yazi)
+  (local)
   (srfi srfi-1))
 
 (operating-system
@@ -105,9 +106,7 @@
            (service cups-service-type)
            (simple-service 'extra-hosts
              hosts-service-type
-             (list
-               (host "REDACTED_IP_1" "REDACTED_HOST_1")
-               (host "REDACTED_IP_2" "REDACTED_HOST_2")))
+             %local-hosts)
            (simple-service 'wayland-env
              session-environment-service-type
              '(("QT_QPA_PLATFORM" . "wayland")
