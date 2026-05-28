@@ -38,7 +38,7 @@
                ,(plain-file "env.nu"
                   "\
 # Cargo
-$env.PATH = ($env.PATH | append $\"($env.HOME)/.cargo/bin\")
+$env.PATH = ($env.PATH | prepend $\"($env.HOME)/.cargo/bin\")
 
 # Starship prompt init
 mkdir ~/.cache/starship
