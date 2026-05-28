@@ -3,6 +3,7 @@
   #:use-module (gnu home services)
   #:use-module (gnu home services shells)
   #:use-module (gnu home services desktop)
+  #:use-module (gnu packages guile-xyz)
   #:use-module (gnu services)
   #:use-module (guix gexp)
   #:use-module (gnu system shadow)
@@ -59,7 +60,11 @@ source ~/.zoxide.nu
 
           (service home-xdg-configuration-files-service-type
            `(("gdb/gdbinit" ,%default-gdbinit)
-             ("nano/nanorc" ,%default-nanorc))))
+             ("nano/nanorc" ,%default-nanorc)))
+
+          (simple-service 'dev-packages
+            home-profile-service-type
+            (list guile-lsp-server)))
 
         %base-home-services))))
 
