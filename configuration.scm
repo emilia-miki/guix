@@ -1,8 +1,8 @@
 (define-module (configuration))
 
 (use-modules
+  (srfi srfi-1)
   (asahi guix systems plasma)
-  (asahi guix systems sway)
   (asahi guix packages linux)
   (btv tailscale)
   (gnu)
@@ -25,8 +25,8 @@
   (gnu packages games)
   (gnu packages gimp)
   (gnu packages gnome)
+  (gnu packages guile-xyz)
   (gnu packages graphics)
-  (gnu packages image)
   (gnu packages kde-graphics)
   (gnu packages kde-internet)
   (gnu packages kde-plasma)
@@ -40,7 +40,6 @@
   (gnu packages music)
   (gnu packages networking)
   (gnu packages nushell)
-  (gnu packages pdf)
   (gnu packages pulseaudio)
   (gnu packages qt)
   (gnu packages racket)
@@ -53,12 +52,12 @@
   (gnu packages video)
   (gnu packages vnc)
   (gnu packages vpn)
-  (gnu packages wm)
   (gnu packages xdisorg)
   (gnu packages display-managers)
   (gnu services cups)
   (gnu services desktop)
   (gnu services sddm)
+  (gnu system)
   (gnu system locale)
   (guix packages)
   (packages blender)
@@ -80,8 +79,7 @@
   (packages wiki-tui)
   (packages xh)
   (packages yazi)
-  (local)
-  (srfi srfi-1))
+  (local))
 
 (operating-system
   ;; (inherit asahi-sway-os)
@@ -159,14 +157,7 @@
       cmake
       clang
 
-      ;; sway / wayland
-      wmenu  ;; temporary, replace with wofi?
-      swayidle
-      swaylock
-      waybar
-      grim
-      slurp
-      mako
+      ;; input / wayland
       fcitx5
       fcitx5-gtk
       fcitx5-gtk4
@@ -178,7 +169,6 @@
       adwaita-icon-theme
       wl-clipboard
       playerctl
-      zathura
 
       ;; network
       openvpn
@@ -270,7 +260,7 @@
       ;; carlito, source-code-pro — check guix names
 
       (remove (lambda (p) (equal? "kitty" (package-name p)))
-              (operating-system-packages asahi-sway-os))))
+              (operating-system-packages asahi-plasma-os))))
   (file-systems
     (cons* (file-system
              (device (uuid "848E-1AEE" 'fat32))
