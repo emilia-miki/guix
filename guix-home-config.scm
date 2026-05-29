@@ -2,7 +2,6 @@
   #:use-module (gnu home)
   #:use-module (gnu home services)
   #:use-module (gnu home services desktop)
-  #:use-module (gnu packages guile-xyz)
   #:use-module (gnu services)
   #:use-module (guix gexp)
   #:use-module (gnu system shadow)
@@ -65,10 +64,6 @@ def sysconf [] {
 
         (service home-xdg-configuration-files-service-type
          `(("gdb/gdbinit" ,%default-gdbinit)
-           ("nano/nanorc" ,%default-nanorc)))
-
-        (simple-service 'dev-packages
-          home-profile-service-type
-          (list guile-lsp-server)))
+           ("nano/nanorc" ,%default-nanorc))))
 
       %base-home-services)))

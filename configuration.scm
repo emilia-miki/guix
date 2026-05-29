@@ -75,7 +75,6 @@
   (packages sddm-qylock)
   (packages skate)
   (packages uutils-coreutils)
-  (packages vlc)
   (packages wiki-tui)
   (packages xh)
   (packages yazi)
@@ -147,7 +146,6 @@
       yt-dlp
       cava
       mpv
-      vlc-wayland
       audacity-wayland
       tenacity
 
