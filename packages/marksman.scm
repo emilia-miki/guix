@@ -6,7 +6,8 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages base)
   #:use-module (gnu packages elf)
-  #:use-module (gnu packages gcc))
+  #:use-module (gnu packages gcc)
+  #:use-module (gnu packages icu4c))
 
 (define-public marksman
   (package
@@ -21,7 +22,7 @@
         (sha256
           (base32 "1yv2v6pkf4xz4794f7n0j8yigvsjkhdq54bc7s709y7p4x2i53nv"))))
     (build-system trivial-build-system)
-    (inputs (list glibc `(,gcc "lib")))
+    (inputs (list glibc `(,gcc "lib") icu4c))
     (native-inputs (list patchelf))
     (arguments
       (list #:modules '((guix build utils))
@@ -34,9 +35,11 @@
                        (binary  (string-append bin "/marksman"))
                        (glibc   (assoc-ref %build-inputs "glibc"))
                        (gcc-lib (assoc-ref %build-inputs "gcc"))
+                       (icu4c   (assoc-ref %build-inputs "icu4c"))
                        (interp  (string-append glibc "/lib/ld-linux-aarch64.so.1"))
                        (rpath   (string-join (list (string-append glibc "/lib")
-                                                   (string-append gcc-lib "/lib"))
+                                                   (string-append gcc-lib "/lib")
+                                                   (string-append icu4c "/lib"))
                                              ":")))
                   (mkdir-p bin)
                   (copy-file source binary)
