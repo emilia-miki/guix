@@ -25,7 +25,6 @@
   (gnu packages games)
   (gnu packages gimp)
   (gnu packages gnome)
-  (gnu packages gnome-circle)
   (gnu packages guile-xyz)
   (gnu packages graphics)
   (gnu packages kde-graphics)
@@ -37,6 +36,7 @@
   (gnu packages kde-utils)
   (gnu packages librewolf)
   (gnu packages linux)
+  (gnu packages lxqt)
   (gnu packages llvm)
   (gnu packages music)
   (gnu packages networking)
@@ -148,6 +148,7 @@
       mpv
       vlc-wayland
       audacity
+      tenacity
 
       ;; build tools
       unzip
@@ -223,8 +224,8 @@
       akregator
       moonlight-qt
       dolphin
-      drawing
-      polari
+      kolourpaint
+      konversation
       wireshark
       qbittorrent
       obs
@@ -240,7 +241,7 @@
 
       ;; system
       bluez
-      pavucontrol
+      pavucontrol-qt
       power-profiles-daemon
 
       ;; fonts
