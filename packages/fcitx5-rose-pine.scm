@@ -24,5 +24,3 @@
       "Rosé Pine color theme for the Fcitx5 input method framework.")
     (home-page "https://github.com/rose-pine/fcitx5")
     (license license:expat)))
-
-fcitx5-rose-pine

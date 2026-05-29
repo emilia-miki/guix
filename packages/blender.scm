@@ -9,6 +9,7 @@
 (define-public blender-wayland
   (package
     (inherit blender)
+    ;; Keep upstream name so the store path matches and profiles don't conflict.
     (name "blender")
     (inputs
       (modify-inputs (package-inputs blender)
@@ -17,5 +18,3 @@
       (substitute-keyword-arguments (package-arguments blender)
         ((#:configure-flags flags)
          #~(append #$flags (list "-DWITH_GHOST_WAYLAND=ON")))))))
-
-blender-wayland

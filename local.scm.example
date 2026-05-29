@@ -2,7 +2,6 @@
   #:use-module (gnu services base)
   #:export (%local-hosts))
 
+;; Add entries like: (host "1.2.3.4" "hostname.example.com")
 (define-public %local-hosts
-  (list
-    ;; (host "1.2.3.4" "hostname.example.com")
-    ))
+  (list))

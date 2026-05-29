@@ -25,6 +25,7 @@
   (gnu packages games)
   (gnu packages gimp)
   (gnu packages gnome)
+  (gnu packages gnome-circle)
   (gnu packages guile-xyz)
   (gnu packages graphics)
   (gnu packages kde-graphics)
@@ -69,8 +70,6 @@
   (packages glow)
   (packages marksman)
   (packages mprocs)
-  (packages clapper)
-  (packages newsflash)
   (packages presenterm)
   (packages sddm-qylock)
   (packages skate)
@@ -82,7 +81,6 @@
   (local))
 
 (operating-system
-  ;; (inherit asahi-sway-os)
   (inherit asahi-plasma-os)
   (timezone "Europe/Kyiv")
   (locale "en_DK.UTF-8")
@@ -117,7 +115,7 @@
     (cons*
       ;; browsers
       librewolf
-      (specification->package "ungoogled-chromium-wayland")
+      ungoogled-chromium/wayland
 
       ;; terminal tools
       file
@@ -222,11 +220,11 @@
 
       ;; GUI apps
       feishin
-      newsflash
+      akregator
       moonlight-qt
       dolphin
       drawing
-      (@ (gnu packages gnome-circle) polari)
+      polari
       wireshark
       qbittorrent
       obs

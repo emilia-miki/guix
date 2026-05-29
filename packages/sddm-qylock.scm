@@ -1,6 +1,5 @@
 (define-module (packages sddm-qylock)
   #:use-module (guix packages)
-  #:use-module (guix git-download)
   #:use-module (guix build-system copy)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download))
@@ -27,5 +26,3 @@
 featuring an animated video background with a stylized login interface.")
     (home-page "https://github.com/darkkal44/qylock")
     (license license:gpl3)))
-
-sddm-qylock-enfield

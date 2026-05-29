@@ -7,9 +7,8 @@
 (define-public vlc-wayland
   (package
     (inherit vlc)
+    ;; Keep upstream name so the store path matches and profiles don't conflict.
     (name "vlc")
     (inputs
       (modify-inputs (package-inputs vlc)
         (append qtwayland-5)))))
-
-vlc-wayland
