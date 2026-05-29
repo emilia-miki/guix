@@ -17,4 +17,4 @@
     (arguments
       (substitute-keyword-arguments (package-arguments blender)
         ((#:configure-flags flags)
-         #~(append #$flags (list "-DWITH_GHOST_WAYLAND=ON")))))))
+         #~(append #$flags (list "-DWITH_GHOST_WAYLAND=ON" "-DWITH_GHOST_X11=OFF")))))))

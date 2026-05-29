@@ -5,6 +5,7 @@
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu services)
   #:use-module (guix gexp)
+  #:use-module (gnu system shadow)
   #:use-module (asahi guix home config)
   #:use-module (asahi guix home services sound))
 
@@ -54,6 +55,12 @@ use ~/.cache/starship/init.nu
 
 # Zoxide
 source ~/.zoxide.nu
+
+def sysconf [] {
+  sudo guix system reconfigure -L /home/miki/Projects/guix /home/miki/Projects/guix/configuration.scm
+  guix home reconfigure -L /home/miki/Projects/guix /home/miki/Projects/guix/guix-home-config.scm
+  kbuildsycoca6 --noincremental
+}
 "))))
 
         (service home-xdg-configuration-files-service-type

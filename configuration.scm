@@ -61,6 +61,7 @@
   (gnu system)
   (gnu system locale)
   (guix packages)
+  (packages audacity)
   (packages blender)
   (packages claude-code)
   (packages dua)
@@ -147,7 +148,7 @@
       cava
       mpv
       vlc-wayland
-      audacity
+      audacity-wayland
       tenacity
 
       ;; build tools
