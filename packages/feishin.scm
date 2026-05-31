@@ -69,7 +69,18 @@
                 (define (elf? path)
                   (let ((s (lstat path)))
                     (and (eq? 'regular (stat:type s))
-                         (not (zero? (logand #o111 (stat:perms s)))))))
+                         (let* ((port (open-file path "rb"))
+                                (b0 (get-u8 port))
+                                (b1 (get-u8 port))
+                                (b2 (get-u8 port))
+                                (b3 (get-u8 port)))
+                           (close-port port)
+                           (and (not (eof-object? b0))
+                                (not (eof-object? b1))
+                                (not (eof-object? b2))
+                                (not (eof-object? b3))
+                                (= b0 #x7f) (= b1 #x45)
+                                (= b2 #x4c) (= b3 #x46))))))
                 (setenv "PATH" (string-append
                                 (assoc-ref %build-inputs "tar") "/bin:"
                                 (assoc-ref %build-inputs "xz") "/bin:"

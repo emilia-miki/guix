@@ -29,20 +29,6 @@ Use=true
             "[Libinput][1452][641][Apple SPI Trackpad]
 DisableWhileTyping=false
 "))
-        ("kscreenlockerrc"
-         ,(plain-file "kscreenlockerrc"
-            "[Greeter][Wallpaper][org.kde.image][General]
-Image=file:///home/miki/Pictures/wallpapers/dark-souls-3-kiln-of-the-first-flame-uhd-4k-wallpaper.jpg
-PreviewImage=file:///home/miki/Pictures/wallpapers/dark-souls-3-kiln-of-the-first-flame-uhd-4k-wallpaper.jpg
-"))
-        ("plasmarc"
-         ,(plain-file "plasmarc"
-            "[Theme]
-name=Dexy-Color-Plasma
-
-[Wallpapers]
-usersWallpapers=/home/miki/Pictures/wallpapers/dark-souls-3-kiln-of-the-first-flame-uhd-4k-wallpaper.jpg
-"))
         ("konsolerc"
          ,(plain-file "konsolerc"
             "MenuBar=Disabled
@@ -65,4 +51,27 @@ ColorScheme=
       `((".local/share/konsole/Custom.profile"
          ,(local-file "files/Custom.profile"))
         (".local/share/konsole/Breeze.colorscheme"
-         ,(local-file "files/Breeze.colorscheme"))))))
+         ,(local-file "files/Breeze.colorscheme"))))
+
+    (simple-service 'kde-wallpaper-activation
+      home-activation-service-type
+      #~(begin
+          (let* ((home (getenv "HOME"))
+                 (wallpaper (string-append home "/Pictures/wallpapers/"
+                              "dark-souls-3-kiln-of-the-first-flame-uhd-4k-wallpaper.jpg"))
+                 (config-dir (string-append home "/.config")))
+            (define (write-config name content)
+              (call-with-output-file (string-append config-dir "/" name)
+                (lambda (port) (display content port))))
+            (write-config "kscreenlockerrc"
+              (string-append
+                "[Greeter][Wallpaper][org.kde.image][General]\n"
+                "Image=file://" wallpaper "\n"
+                "PreviewImage=file://" wallpaper "\n"))
+            (write-config "plasmarc"
+              (string-append
+                "[Theme]\n"
+                "name=Dexy-Color-Plasma\n"
+                "\n"
+                "[Wallpapers]\n"
+                "usersWallpapers=" wallpaper "\n"))))))))

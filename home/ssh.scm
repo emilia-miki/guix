@@ -46,8 +46,10 @@ ForwardX11Trusted yes"))
             (chmod ssh-dir #o700)
             (for-each
               (lambda (path content mode)
-                (call-with-output-file path
-                  (lambda (port) (display content port)))
+                (let ((saved (umask #o177)))
+                  (call-with-output-file path
+                    (lambda (port) (display content port)))
+                  (umask saved))
                 (chmod path mode))
               (list (string-append ssh-dir "/id_ed25519")
                     (string-append ssh-dir "/id_ed25519.pub"))

@@ -33,16 +33,19 @@
       home-activation-service-type
       #~(begin
           (use-modules (guix build utils))
-          (let ((vpn-dir (string-append (getenv "HOME") "/.config/openvpn")))
+          (let* ((home (getenv "HOME"))
+                 (vpn-dir (string-append home "/.config/openvpn")))
             (mkdir-p vpn-dir)
             (chmod vpn-dir #o700)
             (for-each
               (lambda (path content mode)
-                (call-with-output-file path
-                  (lambda (port) (display content port)))
+                (let ((saved (umask #o177)))
+                  (call-with-output-file path
+                    (lambda (port) (display content port)))
+                  (umask saved))
                 (chmod path mode))
               (list (string-append vpn-dir #$%ovpn-name)
                     (string-append vpn-dir "/vpn.txt"))
-              (list #$%ovpn-config
+              (list (string-replace-substring #$%ovpn-config "HOME" home)
                     (string-append #$%vpn-username "\n" #$%vpn-password "\n"))
               (list #o600 #o600)))))))
