@@ -64,6 +64,7 @@
   (packages audacity)
   (packages blender)
   (packages claude-code)
+  (packages dexy-themes)
   (packages dua)
   (packages dust)
   (packages fcitx5-rose-pine)
@@ -237,6 +238,8 @@
       ;; languages / runtimes
       racket
       qmk
+
+      dexy-plasma-themes
 
       ;; system
       bluez
