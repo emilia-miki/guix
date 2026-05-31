@@ -13,8 +13,8 @@
             "[character]\nsuccess_symbol = '[λ](bold green)'\nerror_symbol = '[λ](bold red)'\n"))
         ("nushell/env.nu"
          ,(plain-file "env.nu"
-            "# Cargo
-$env.PATH = ($env.PATH | prepend $\"($env.HOME)/.cargo/bin\")
+            "# Local bin and Cargo
+$env.PATH = ($env.PATH | prepend $\"($env.HOME)/.local/bin\" | prepend $\"($env.HOME)/.cargo/bin\")
 
 # Starship prompt init
 mkdir ~/.cache/starship

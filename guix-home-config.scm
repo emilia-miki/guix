@@ -12,7 +12,9 @@
   #:use-module (home helix)
   #:use-module (home kde)
   #:use-module (home apps)
-  #:use-module (home ssh))
+  #:use-module (home ssh)
+  #:use-module (home work)
+  #:use-module (gnu home services xdg))
 
 (define %gtk-settings
   "[Settings]\ngtk-application-prefer-dark-theme=1\ngtk-cursor-theme-name=Adwaita\ngtk-cursor-theme-size=24\n")
@@ -35,7 +37,8 @@
 
         (service home-xdg-configuration-files-service-type
           `(("gdb/gdbinit" ,%default-gdbinit)
-            ("nano/nanorc" ,%default-nanorc))))
+            ("nano/nanorc" ,%default-nanorc)))
+        (service home-xdg-user-directories-service-type))
 
       %shell-services
       %tools-services
@@ -43,4 +46,5 @@
       %kde-services
       %apps-services
       %ssh-services
+      %work-services
       %base-home-services)))

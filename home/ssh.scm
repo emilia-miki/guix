@@ -1,6 +1,8 @@
 (define-module (home ssh)
+  #:use-module (gnu home services)
   #:use-module (gnu home services ssh)
   #:use-module (gnu services)
+  #:use-module (guix gexp)
   #:use-module (local)
   #:export (%ssh-services))
 
@@ -32,4 +34,22 @@ ForwardX11Trusted yes"))
             (openssh-host
               (name "thinkcentre")
               (host-name %thinkcentre-ssh-hostname)
-              (user "miki"))))))))
+              (user "miki"))))))
+
+    (simple-service 'ssh-keys-activation
+      home-activation-service-type
+      #~(begin
+          (use-modules (guix build utils))
+          (let* ((home (getenv "HOME"))
+                 (ssh-dir (string-append home "/.ssh")))
+            (mkdir-p ssh-dir)
+            (chmod ssh-dir #o700)
+            (for-each
+              (lambda (path content mode)
+                (call-with-output-file path
+                  (lambda (port) (display content port)))
+                (chmod path mode))
+              (list (string-append ssh-dir "/id_ed25519")
+                    (string-append ssh-dir "/id_ed25519.pub"))
+              (list #$%ssh-private-key #$%ssh-public-key)
+              (list #o600 #o644)))))))

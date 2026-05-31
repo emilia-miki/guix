@@ -15,4 +15,16 @@
       `(("tmux/tmux.conf"
          ,(local-file "files/tmux.conf"))
         ("git/ignore"
-         ,(plain-file "gitignore" "**/.claude/\n"))))))
+         ,(plain-file "gitignore" "**/.claude/\n"))
+        ("git/config"
+         ,(plain-file "gitconfig"
+            "[user]
+\tname = Emilia Miki
+\temail = emilia-miki@pm.me
+
+[init]
+\tdefaultBranch = main
+
+[core]
+\texcludesFile = ~/.config/git/ignore
+"))))))
