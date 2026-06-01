@@ -5,6 +5,12 @@
   #:use-module (local)
   #:export (%work-services))
 
+(define update-resolv-conf-script
+  (computed-file "update-resolv-conf.sh"
+    #~(begin
+        (copy-file #$(local-file "files/update-resolv-conf.sh") #$output)
+        (chmod #$output #o755))))
+
 (define vpn-route-up-script
   (computed-file "vpn-route-up.sh"
     #~(begin
@@ -23,7 +29,7 @@
     (simple-service 'work-home-files
       home-files-service-type
       `((".local/bin/update-resolv-conf.sh"
-         ,(local-file "files/update-resolv-conf.sh"))
+         ,update-resolv-conf-script)
         (".local/bin/vpn-route-up.sh"
          ,vpn-route-up-script)
         (".local/share/ca-certificates/rootCA.pem"
