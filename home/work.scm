@@ -32,7 +32,7 @@
     (simple-service 'work-openvpn-activation
       home-activation-service-type
       #~(begin
-          (use-modules (guix build utils))
+          (use-modules (guix build utils) (guix utils))
           (let* ((home (getenv "HOME"))
                  (vpn-dir (string-append home "/.config/openvpn")))
             (mkdir-p vpn-dir)
