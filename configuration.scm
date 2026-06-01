@@ -77,7 +77,6 @@
   (packages sddm-qylock)
   (packages skate)
   (packages uutils-coreutils)
-  (packages wiki-tui)
   (packages xh)
   (packages yazi)
   (local))
@@ -180,7 +179,6 @@
       skate
       marksman
       yazi
-      wiki-tui
       dust
       dua
       uutils-coreutils
