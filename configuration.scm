@@ -70,6 +70,7 @@
   (packages fcitx5-rose-pine)
   (packages feishin)
   (packages glow)
+  (packages helix)
   (packages marksman)
   (packages mprocs)
   (packages presenterm)
@@ -139,7 +140,7 @@
       fd
       inotify-tools
       tmux
-      helix
+      helix-steel
       (list isc-bind "utils") ;; provides nslookup, dig, host
 
       ;; multimedia
