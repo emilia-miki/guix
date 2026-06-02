@@ -71,6 +71,7 @@
   (packages feishin)
   (packages glow)
   (packages helix)
+  (packages lem)
   (packages marksman)
   (packages mprocs)
   (packages presenterm)
@@ -150,6 +151,7 @@
       inotify-tools
       tmux
       helix-steel
+      lem
       (list isc-bind "utils") ;; provides nslookup, dig, host
 
       ;; multimedia
