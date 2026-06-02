@@ -57,6 +57,7 @@
   (gnu packages display-managers)
   (gnu services cups)
   (gnu services desktop)
+  (gnu services guix)
   (gnu services sddm)
   (gnu system)
   (gnu system locale)
@@ -109,6 +110,7 @@
              '(("QT_QPA_PLATFORM" . "wayland")
                ("GDK_BACKEND" . "wayland,x11")))
            (modify-services (operating-system-user-services asahi-plasma-os)
+             (delete guix-home-service-type)
              (guix-service-type config =>
                (guix-configuration
                  (inherit config)
