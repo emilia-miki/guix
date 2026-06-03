@@ -74,4 +74,4 @@ ColorScheme=
                 "name=Dexy-Color-Plasma\n"
                 "\n"
                 "[Wallpapers]\n"
-                "usersWallpapers=" wallpaper "\n"))))))))
+                "usersWallpapers=" wallpaper "\n")))))))
