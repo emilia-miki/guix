@@ -14,6 +14,7 @@
   #:use-module (home apps)
   #:use-module (home ssh)
   #:use-module (home work)
+  #:use-module (home emacs)
   #:use-module (gnu home services xdg))
 
 (define %gtk-settings
@@ -26,6 +27,11 @@
       (list
         (service home-dbus-service-type)
         (service home-pipewire-service-type)
+
+        ;; Emacs packages
+        (simple-service 'emacs-packages
+          home-profile-service-type
+          %emacs-packages)
 
         (service home-files-service-type
           `((".config/gtk-3.0/settings.ini"
@@ -47,4 +53,5 @@
       %apps-services
       %ssh-services
       %work-services
+      %emacs-services
       %base-home-services)))
