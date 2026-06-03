@@ -43,6 +43,7 @@
   (gnu packages music)
   (gnu packages networking)
   (gnu packages nushell)
+  (gnu packages package-management)
   (gnu packages pulseaudio)
   (gnu packages qt)
   (gnu packages racket)
@@ -78,6 +79,7 @@
   (packages lem)
   (packages marksman)
   (packages mprocs)
+  (packages nyxt)
   (packages presenterm)
   (packages sddm-qylock)
   (packages skate)
@@ -133,6 +135,7 @@
       ;; browsers
       librewolf
       ungoogled-chromium/wayland
+      nyxt
 
       ;; terminal tools
       file
@@ -254,6 +257,7 @@
       gimp
       ;; krita
       klavaro
+      flatpak
 
       ;; languages / runtimes
       racket
