@@ -25,6 +25,8 @@
   (gnu packages games)
   (gnu packages gimp)
   (gnu packages gnome)
+  (gnu packages golang)
+  (gnu packages golang-apps)
   (gnu packages guile-xyz)
   (gnu packages graphics)
   (gnu packages kde-graphics)
@@ -45,6 +47,7 @@
   (gnu packages qt)
   (gnu packages racket)
   (gnu packages readline)
+  (gnu packages rust)
   (gnu packages rust-apps)
   (gnu packages shellutils)
   (gnu packages text-editors)
@@ -155,6 +158,10 @@
       helix-steel
       lem
       (list isc-bind "utils") ;; provides nslookup, dig, host
+      rust
+      rust-analyzer
+      go
+      gopls
 
       ;; multimedia
       ffmpeg
