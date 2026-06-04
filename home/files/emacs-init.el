@@ -34,7 +34,8 @@
 (use-package marginalia :init (marginalia-mode 1))
 (use-package consult
   :bind (("C-c r" . consult-ripgrep) ("C-c f" . consult-find)
-         ("C-c l" . consult-line) ("M-y" . consult-yank-pop)))
+         ("C-c l" . consult-line) ("M-y" . consult-yank-pop)
+         ("C-x b" . consult-buffer)))
 (use-package embark
   :bind (("C-." . embark-act) ("M-." . embark-dwim))
   :init (setq prefix-help-command #'embark-prefix-help-command))
@@ -78,16 +79,31 @@
 (use-package paredit
   :hook ((lisp-mode       . paredit-mode)
          (emacs-lisp-mode . paredit-mode)
-         (sly-mrepl-mode  . paredit-mode)))
+         (sly-mrepl-mode  . paredit-mode)
+         (scheme-mode     . paredit-mode)
+         ;; paredit handles pairing; electric-pair would double-insert
+         (lisp-mode       . (lambda () (electric-pair-local-mode -1)))
+         (emacs-lisp-mode . (lambda () (electric-pair-local-mode -1)))
+         (sly-mrepl-mode  . (lambda () (electric-pair-local-mode -1)))
+         (scheme-mode     . (lambda () (electric-pair-local-mode -1)))))
 
 (use-package rainbow-delimiters
   :hook ((lisp-mode       . rainbow-delimiters-mode)
          (emacs-lisp-mode . rainbow-delimiters-mode)
-         (sly-mrepl-mode  . rainbow-delimiters-mode)))
+         (sly-mrepl-mode  . rainbow-delimiters-mode)
+         (scheme-mode     . rainbow-delimiters-mode)))
+
+;; ── Scheme / Guile ────────────────────────────────────────────────
+(use-package geiser-guile
+  :hook (scheme-mode . geiser-mode))
 
 ;; ── LSP with Eglot ─────────────────────────────────────────────────
 (use-package eglot
   :hook ((rust-mode . eglot-ensure) (rust-ts-mode . eglot-ensure))
+  :bind (("C-c a" . eglot-code-actions)
+         ("C-c n" . eglot-rename)
+         ("C-c =" . eglot-format-buffer)
+         ("C-c d" . flymake-show-buffer-diagnostics))
   :config
   (setq eglot-autoshutdown t)
   (let* ((sysroot (or (getenv "RUST_SYSROOT")
@@ -114,7 +130,13 @@
 ;; ── In-buffer completion ───────────────────────────────────────────
 (use-package corfu
   :init (global-corfu-mode 1)
-  :custom (corfu-auto t))
+  :custom (corfu-auto t)
+  :config (corfu-popupinfo-mode 1))
+
+(use-package cape
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev))
 
 ;; ── Treesit (tree-sitter grammars from guix) ──────────────────────
 (when (and (fboundp 'treesit-available-p) (treesit-available-p))
@@ -129,9 +151,38 @@
           (js-mode     . js-ts-mode)
           (json-mode   . json-ts-mode)
           (python-mode . python-ts-mode)
-          (rust-mode   . rust-ts-mode)
-          (yaml-mode   . yaml-ts-mode)))
+          (rust-mode       . rust-ts-mode)
+          (typescript-mode . typescript-ts-mode)
+          (yaml-mode       . yaml-ts-mode)))
   (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode)))
+
+;; ── Structural editing / selection ────────────────────────────────
+(use-package expreg
+  :bind ("C-=" . expreg-expand)
+        ("C--" . expreg-contract))
+
+(use-package combobulate
+  :hook ((go-ts-mode     . combobulate-mode)
+         (rust-ts-mode   . combobulate-mode)
+         (python-ts-mode . combobulate-mode)
+         (js-ts-mode     . combobulate-mode)
+         (json-ts-mode   . combobulate-mode)
+         (yaml-ts-mode        . combobulate-mode)
+         (bash-ts-mode        . combobulate-mode)
+         (typescript-ts-mode  . combobulate-mode)))
+
+;; ── Navigation ────────────────────────────────────────────────────
+(use-package avy
+  :bind (("C-c j" . avy-goto-char-2)   ;; type 2 chars → jump (like Helix f/t)
+         ("M-g g" . avy-goto-line)))    ;; jump to visible line; digits fall back to goto-line
+
+;; ── Undo / Redo ───────────────────────────────────────────────────
+(use-package undo-fu
+  :bind (("C-/" . undo-fu-only-undo)
+         ("C-?" . undo-fu-only-redo)))
+
+;; ── Search result editing ─────────────────────────────────────────
+(use-package wgrep)   ;; press e in any grep/consult-ripgrep buffer to edit in place
 
 ;; ── Editor basics ──────────────────────────────────────────────────
 (setq-default indent-tabs-mode nil tab-width 4 truncate-lines t)
@@ -139,6 +190,7 @@
 (setq ring-bell-function 'ignore use-short-answers t
       make-backup-files nil auto-save-default nil create-lockfiles nil)
 (global-auto-revert-mode 1)
+(electric-pair-mode 1)
 (global-display-line-numbers-mode 1)
 (recentf-mode 1)
 (save-place-mode 1)
