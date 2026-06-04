@@ -15,6 +15,7 @@
   #:use-module (home ssh)
   #:use-module (home work)
   #:use-module (home emacs)
+  #:use-module (home fcitx5)
   #:use-module (gnu home services xdg))
 
 (define %gtk-settings
@@ -60,6 +61,7 @@
       %tools-services
       %helix-services
       %kde-services
+      %fcitx5-services
       %apps-services
       %ssh-services
       %work-services
