@@ -41,6 +41,16 @@
             (".config/gtk-4.0/settings.ini"
              ,(plain-file "gtk-settings.ini" %gtk-settings))))
 
+        (simple-service 'emacs-init-symlink
+          home-activation-service-type
+          #~(let* ((home   (getenv "HOME"))
+                   (link   (string-append home "/.emacs.d/init.el"))
+                   (target (string-append home "/Projects/guix/home/files/emacs-init.el")))
+              (mkdir-p (string-append home "/.emacs.d"))
+              (when (file-exists? link)
+                (delete-file link))
+              (symlink target link)))
+
         (service home-xdg-configuration-files-service-type
           `(("gdb/gdbinit" ,%default-gdbinit)
             ("nano/nanorc" ,%default-nanorc)))
