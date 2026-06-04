@@ -1,7 +1,37 @@
 (define-module (local)
   #:use-module (gnu services base)
-  #:export (%local-hosts))
+  #:export (%local-hosts
+            %work-ssh-hostname
+            %work-ssh-user
+            %thinkcentre-ssh-hostname
+            %ssh-private-key
+            %ssh-public-key
+            %vpn-username
+            %vpn-password
+            %ovpn-name
+            %ovpn-config))
 
 ;; Add entries like: (host "1.2.3.4" "hostname.example.com")
 (define-public %local-hosts
-  (list))
+  (list
+    (host "1.2.3.4" "server.example.com")
+    (host "100.x.x.x" "mymachine")))
+
+(define-public %work-ssh-hostname "192.168.x.x")
+(define-public %work-ssh-user "username")
+(define-public %thinkcentre-ssh-hostname "100.x.x.x")
+
+(define-public %ssh-private-key
+  "-----BEGIN OPENSSH PRIVATE KEY-----
+<your private key here>
+-----END OPENSSH PRIVATE KEY-----
+")
+
+(define-public %ssh-public-key
+  "ssh-ed25519 AAAA... user@host\n")
+
+(define-public %vpn-username "vpn-username")
+(define-public %vpn-password "vpn-password")
+(define-public %ovpn-name "/profile.ovpn")
+
+(define-public %ovpn-config "<openvpn config string>")
