@@ -31,10 +31,12 @@ use ~/.cache/starship/init.nu
 # Zoxide
 source ~/.zoxide.nu
 
+alias em = emacsclient -nw
+
 def sysconf [] {
-  let guix = $"($env.HOME)/Projects/guix"
-  sudo guix system reconfigure -L $guix $"($guix)/configuration.scm"
-  guix home reconfigure -L $guix $"($guix)/guix-home-config.scm"
+  let guix = $\"($env.HOME)/Projects/guix\"
+  sudo guix system reconfigure -L $guix $\"($guix)/configuration.scm\"
+  guix home reconfigure -L $guix $\"($guix)/guix-home-config.scm\"
   kbuildsycoca6 --noincremental
 }
 "))))))

@@ -20,13 +20,6 @@
 
 ;; ── Theme ──────────────────────────────────────────────────────────
 (load-theme 'modus-vivendi t)
-;; (use-package autothemer)
-;; (straight-use-package
-;;   '(rose-pine-emacs
-;;     :host github
-;;     :repo "thongpv87/rose-pine-emacs"
-;;     :branch "master"))
-;; (load-theme 'rose-pine-color t)
 
 ;; ── Modern completion ──────────────────────────────────────────────
 (use-package vertico :init (vertico-mode 1))
@@ -156,10 +149,9 @@
           (python-mode . python-ts-mode)
           (rust-mode       . rust-ts-mode)
           (typescript-mode . typescript-ts-mode)
+          (markdown-mode   . markdown-ts-mode)
           (yaml-mode       . yaml-ts-mode)))
-  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
-  ;; tree-sitter-markdown is installed; markdown-ts-mode available in Emacs 30+
-  )
+  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode)))
 
 ;; ── Structural editing / selection ────────────────────────────────
 (use-package expreg
@@ -196,15 +188,35 @@
       make-backup-files nil auto-save-default nil create-lockfiles nil)
 (global-auto-revert-mode 1)
 (electric-pair-mode 1)
-(global-display-line-numbers-mode 1)
+(pixel-scroll-precision-mode 1)
 (recentf-mode 1)
 (save-place-mode 1)
 (column-number-mode 1)
-(tool-bar-mode -1)(menu-bar-mode -1)(scroll-bar-mode -1)
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+(scroll-bar-mode -1)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+;; copy/paste via wl-clipboard so that clipboard works in terminals
+(when (executable-find "wl-copy")
+  (defun wl-copy (text)
+    (let ((proc (make-process :name "wl-copy"
+                              :buffer nil
+                              :command '("wl-copy" "-f" "-n")
+                              :connection-type 'pipe
+                              :noquery t)))
+      (process-send-string proc text)
+      (process-send-eof proc)))
+  (defun wl-paste ()
+    (shell-command-to-string "wl-paste -n | tr -d \r"))
+  (add-hook 'after-init-hook
+            (lambda ()
+              (setq interprogram-cut-function #'wl-copy)
+              (setq interprogram-paste-function #'wl-paste))))
 
 ;; ── Discoverability ────────────────────────────────────────────────
 (use-package which-key :config (which-key-mode 1))
 
 ;; ── Server ─────────────────────────────────────────────────────────
-(server-start)
+(unless (bound-and-true-p server-process)
+  (server-start))
