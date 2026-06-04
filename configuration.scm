@@ -179,6 +179,7 @@
       libtool
       cmake
       clang
+      typst
 
       ;; input / wayland
       fcitx5
