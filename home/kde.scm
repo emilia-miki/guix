@@ -154,15 +154,6 @@ Exec=librewolf %u
 Icon=librewolf
 Type=Application
 Categories=Network;WebBrowser;
-"))
-        ("autostart/org.kde.konsole.desktop"
-         ,(plain-file "konsole-autostart.desktop"
-            "[Desktop Entry]
-Name=Konsole
-Exec=konsole
-Icon=utilities-terminal
-Type=Application
-Categories=System;TerminalEmulator;
 "))))
 
     (simple-service 'kde-home-files
