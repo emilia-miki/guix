@@ -57,8 +57,7 @@ ColorScheme=
       home-activation-service-type
       #~(begin
           (let* ((home (getenv "HOME"))
-                 (wallpaper (string-append home "/Pictures/wallpapers/"
-                              "dark-souls-3-kiln-of-the-first-flame-uhd-4k-wallpaper.jpg"))
+                 (wallpaper #$(local-file "files/dark-souls-3-kiln-of-the-first-flame-uhd-4k-wallpaper.jpg"))
                  (config-dir (string-append home "/.config")))
             (define (write-config name content)
               (call-with-output-file (string-append config-dir "/" name)
