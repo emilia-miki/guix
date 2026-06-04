@@ -181,6 +181,18 @@
 ;; ── Search result editing ─────────────────────────────────────────
 (use-package wgrep)   ;; press e in any grep/consult-ripgrep buffer to edit in place
 
+;; ── Terminal emulator/shell stuff ──────────────────────────────────
+(use-package eat)
+
+;; ── Dired stuff ──────────────────────────────────
+(use-package dired-preview
+  :hook (dired-mode . dired-preview-mode)
+  :config (setq dired-preview-delay 0)
+          (setq dired-preview-max-size 5242880))
+
+(use-package pdf-tools
+  :config (pdf-tools-install))
+
 ;; ── Editor basics ──────────────────────────────────────────────────
 (setq-default indent-tabs-mode nil tab-width 4 truncate-lines t)
 (set-face-attribute 'default nil :height 180)

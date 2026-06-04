@@ -13,8 +13,8 @@
 ;   cd ~/Projects/git/xxx/helix
 ;   git checkout d32de0548fa11f54283baae806c0458f06ea682e
 ;   cargo vendor guix-vendor
-;   tar czf ~/Projects/guix/packages/files/helix-steel-vendor.tar.gz guix-vendor
-;   guix hash ~/Projects/guix/packages/files/helix-steel-vendor.tar.gz
+;   tar czf ~/Projects/guix-system/packages/files/helix-steel-vendor.tar.gz guix-vendor
+;   guix hash ~/Projects/guix-system/packages/files/helix-steel-vendor.tar.gz
 
 (define helix-steel-vendor
   (local-file "files/helix-steel-vendor.tar.gz"))

@@ -46,7 +46,7 @@
           home-activation-service-type
           #~(let* ((home   (getenv "HOME"))
                    (link   (string-append home "/.config/emacs/init.el"))
-                   (target (string-append home "/Projects/guix/home/files/emacs-init.el")))
+                   (target (string-append home "/Projects/guix-system/home/files/emacs-init.el")))
               (mkdir-p (string-append home "/.config/emacs"))
               (when (file-exists? link)
                 (delete-file link))
