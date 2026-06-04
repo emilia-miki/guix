@@ -64,7 +64,8 @@
   :hook ((python-mode . eglot-ensure) (python-ts-mode . eglot-ensure)))
 
 (use-package typescript-mode :mode "\\.\\(ts\\|tsx\\)\\'"
-  :hook ((typescript-mode . eglot-ensure)
+  :hook ((typescript-mode    . eglot-ensure)
+         (typescript-ts-mode . eglot-ensure)
          (js-mode . eglot-ensure) (js-ts-mode . eglot-ensure)))
 
 (use-package json-mode :mode "\\.json\\'")
@@ -134,17 +135,19 @@
   :config (corfu-popupinfo-mode 1))
 
 (use-package cape
-  :init
-  (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev))
+  :hook (prog-mode . (lambda ()
+                       (add-hook 'completion-at-point-functions #'cape-file nil t)
+                       (add-hook 'completion-at-point-functions #'cape-dabbrev nil t))))
 
 ;; ── Treesit (tree-sitter grammars from guix) ──────────────────────
 (when (and (fboundp 'treesit-available-p) (treesit-available-p))
-  (let ((guix-ts-lib (expand-file-name "lib/tree-sitter"
-                       (or (getenv "GUIX_PROFILE")
-                           (expand-file-name "~/.guix-home/profile")))))
-    (when (file-directory-p guix-ts-lib)
-      (add-to-list 'treesit-extra-load-path guix-ts-lib)))
+  (dolist (profile (list (getenv "GUIX_PROFILE")
+                         (expand-file-name "~/.guix-home/profile")
+                         "/run/current-system/profile"))
+    (when profile
+      (let ((ts-lib (expand-file-name "lib/tree-sitter" profile)))
+        (when (file-directory-p ts-lib)
+          (add-to-list 'treesit-extra-load-path ts-lib)))))
   (setq major-mode-remap-alist
         '((bash-mode   . bash-ts-mode)
           (go-mode     . go-ts-mode)
@@ -154,12 +157,14 @@
           (rust-mode       . rust-ts-mode)
           (typescript-mode . typescript-ts-mode)
           (yaml-mode       . yaml-ts-mode)))
-  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode)))
+  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
+  ;; tree-sitter-markdown is installed; markdown-ts-mode available in Emacs 30+
+  )
 
 ;; ── Structural editing / selection ────────────────────────────────
 (use-package expreg
-  :bind ("C-=" . expreg-expand)
-        ("C--" . expreg-contract))
+  :bind (("C-=" . expreg-expand)
+         ("C--" . expreg-contract)))
 
 (use-package combobulate
   :hook ((go-ts-mode     . combobulate-mode)

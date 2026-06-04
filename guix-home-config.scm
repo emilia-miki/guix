@@ -44,9 +44,9 @@
         (simple-service 'emacs-init-symlink
           home-activation-service-type
           #~(let* ((home   (getenv "HOME"))
-                   (link   (string-append home "/.emacs.d/init.el"))
+                   (link   (string-append home "/.config/emacs/init.el"))
                    (target (string-append home "/Projects/guix/home/files/emacs-init.el")))
-              (mkdir-p (string-append home "/.emacs.d"))
+              (mkdir-p (string-append home "/.config/emacs"))
               (when (file-exists? link)
                 (delete-file link))
               (symlink target link)))
@@ -63,5 +63,4 @@
       %apps-services
       %ssh-services
       %work-services
-      %emacs-services
       %base-home-services)))

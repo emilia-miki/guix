@@ -2,10 +2,7 @@
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages rust)
   #:use-module (gnu packages tree-sitter)
-  #:use-module (gnu home services)
-  #:use-module (guix gexp)
-  #:export (%emacs-packages
-            %emacs-services))
+  #:export (%emacs-packages))
 
 (define %emacs-packages
   (list
@@ -21,11 +18,5 @@
    tree-sitter-markdown
    tree-sitter-json
    tree-sitter-toml
+   tree-sitter-typescript
    tree-sitter-yaml))
-
-(define %emacs-services
-  (list
-   (simple-service 'emacs-xdg-config
-     home-xdg-configuration-files-service-type
-     `(("emacs/init.el"
-        ,(local-file "files/emacs-init.el"))))))

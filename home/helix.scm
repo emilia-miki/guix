@@ -10,9 +10,7 @@
       home-xdg-configuration-files-service-type
       `(("helix/init.scm"
          ,(local-file "files/helix-init.scm"))
-        ("helix/helix.scm"
-         ,(plain-file "helix.scm" "\n"))
-        ("helix/themes/rose_pine.toml"
+("helix/themes/rose_pine.toml"
          ,(local-file "files/helix-rose_pine.toml"))
         ("helix/.helix/languages.toml"
          ,(plain-file "languages.toml"
