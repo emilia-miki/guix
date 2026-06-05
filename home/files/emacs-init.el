@@ -1,39 +1,81 @@
 ;;; init.el -*- lexical-binding: t -*-
 
+;; Disable package.el — elpaca manages packages instead
+(setq package-enable-at-startup nil)
+
 (add-to-list 'load-path
   (expand-file-name "~/.guix-home/profile/share/emacs/site-lisp/pdf-tools-1.3.0"))
 
-;; ── straight.el bootstrap ──────────────────────────────────────────
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 7))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
+;; ── elpaca bootstrap ───────────────────────────────────────────────
+(defvar elpaca-installer-version 0.12)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-sources-directory (expand-file-name "sources/" elpaca-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                              :ref nil :depth 1 :inherit ignore
+                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+                              :build (:not elpaca-activate)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-sources-directory))
+       (build (expand-file-name "elpaca/" elpaca-builds-directory))
+       (order (cdr elpaca-order))
+       (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (<= emacs-major-version 28) (require 'subr-x))
+    (condition-case-unless-debug err
+        (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                  ,@(when-let* ((depth (plist-get order :depth)))
+                                                      (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                  ,(plist-get order :repo) ,repo))))
+                  ((zerop (call-process "git" nil buffer t "checkout"
+                                        (or (plist-get order :ref) "--"))))
+                  (emacs (concat invocation-directory invocation-name))
+                  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                        "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                  ((require 'elpaca))
+                  ((elpaca-generate-autoloads "elpaca" repo)))
+            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+          (error "%s" (with-current-buffer buffer (buffer-string))))
+      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
 
-;; ── use-package via straight ───────────────────────────────────────
-(straight-use-package 'use-package)
-(setq straight-use-package-by-default t)
+;; ── use-package via elpaca ─────────────────────────────────────────
+(elpaca elpaca-use-package
+  (elpaca-use-package-mode))
+
+;; Block until elpaca-use-package-mode is active before using use-package
+(elpaca-wait)
+
+(setq use-package-always-ensure t)
+
+;; Install compat from source — ELPA's version (30.x) is too old for current packages
+(use-package compat
+  :ensure (:host github :repo "emacs-compat/compat"))
+
+;; transient bundled with Emacs (0.7.x) is too old for current magit (needs 0.13+)
+(use-package transient
+  :ensure (:host github :repo "magit/transient"))
 
 ;; ── Theme ──────────────────────────────────────────────────────────
 (load-theme 'modus-vivendi t)
 
 ;; ── Modern completion ──────────────────────────────────────────────
-(use-package vertico :init (vertico-mode 1))
+(use-package vertico :config (vertico-mode 1))
 (use-package orderless :custom (completion-styles '(orderless basic)))
-(use-package marginalia :init (marginalia-mode 1))
+(use-package marginalia :config (marginalia-mode 1))
 (use-package consult
   :bind (("C-c r" . consult-ripgrep) ("C-c f" . consult-find)
          ("C-c l" . consult-line) ("M-y" . consult-yank-pop)
          ("C-x b" . consult-buffer)))
 (use-package embark
-  :bind (("C-." . embark-act) ("M-." . embark-dwim))
+  :bind (("C-." . embark-act) ("C-;" . embark-dwim))
   :init (setq prefix-help-command #'embark-prefix-help-command))
 (use-package embark-consult
   :hook (embark-collect-mode . consult-preview-at-point-mode))
@@ -96,6 +138,7 @@
 
 ;; ── LSP with Eglot ─────────────────────────────────────────────────
 (use-package eglot
+  :ensure nil
   :hook ((rust-mode . eglot-ensure) (rust-ts-mode . eglot-ensure))
   :bind (("C-c a" . eglot-code-actions)
          ("C-c n" . eglot-rename)
@@ -126,9 +169,8 @@
 
 ;; ── In-buffer completion ───────────────────────────────────────────
 (use-package corfu
-  :init (global-corfu-mode 1)
   :custom (corfu-auto t)
-  :config (corfu-popupinfo-mode 1))
+  :config (global-corfu-mode 1) (corfu-popupinfo-mode 1))
 
 (use-package cape
   :hook (prog-mode . (lambda ()
@@ -152,7 +194,7 @@
           (python-mode . python-ts-mode)
           (rust-mode       . rust-ts-mode)
           (typescript-mode . typescript-ts-mode)
-          (markdown-mode   . markdown-ts-mode)
+;;          (markdown-mode   . markdown-ts-mode)
           (yaml-mode       . yaml-ts-mode)))
   (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode)))
 
@@ -162,6 +204,7 @@
          ("C--" . expreg-contract)))
 
 (use-package combobulate
+  :ensure (:host github :repo "mickeynp/combobulate" :branch "development")
   :hook ((go-ts-mode     . combobulate-mode)
          (rust-ts-mode   . combobulate-mode)
          (python-ts-mode . combobulate-mode)
@@ -201,8 +244,6 @@
                                           (replace-regexp-in-string "\\\\|epub" "" dired-preview-ignored-extensions-regexp))))
 
 (use-package pdf-tools
-  :straight nil
-  :ensure t
   :config (pdf-tools-install))
 
 (use-package nov
@@ -216,7 +257,7 @@
 
 ;; ── Editor basics ──────────────────────────────────────────────────
 (setq-default indent-tabs-mode nil tab-width 4 truncate-lines t)
-(set-face-attribute 'default nil :height 180)
+(set-face-attribute 'default nil :height 140)
 (setq ring-bell-function 'ignore use-short-answers t
       make-backup-files nil auto-save-default nil create-lockfiles nil)
 (global-auto-revert-mode 1)

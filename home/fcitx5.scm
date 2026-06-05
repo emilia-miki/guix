@@ -134,6 +134,10 @@ HanjaMode=False
 0=Tab
 ")
 
+(define %fcitx5-clipboard
+  "[Trigger Key]
+")
+
 (define-public %fcitx5-services
   (list
     (simple-service 'fcitx5-xdg-config
@@ -145,4 +149,6 @@ HanjaMode=False
         ("fcitx5/conf/classicui.conf"
          ,(plain-file "fcitx5-classicui.conf" %fcitx5-classicui))
         ("fcitx5/conf/hangul.conf"
-         ,(plain-file "fcitx5-hangul.conf" %fcitx5-hangul))))))
+         ,(plain-file "fcitx5-hangul.conf" %fcitx5-hangul))
+        ("fcitx5/conf/clipboard.conf"
+         ,(plain-file "fcitx5-clipboard.conf" %fcitx5-clipboard))))))

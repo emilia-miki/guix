@@ -7,7 +7,7 @@
 
 (define %emacs-packages
   (list
-   emacs
+   emacs-pgtk
    emacs-pdf-tools
    ;; Standard library source for rust-analyzer goto-definition
    (list rust "rust-src")
