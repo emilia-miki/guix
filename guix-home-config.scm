@@ -42,15 +42,18 @@
             (".config/gtk-4.0/settings.ini"
              ,(plain-file "gtk-settings.ini" %gtk-settings))))
 
+        (simple-service 'pdf-tools-env home-environment-variables-service-type
+                        '(("ACLOCAL_PATH" . "$HOME/.guix-home/profile/share/aclocal:/run/current-system/profile/share/aclocal")))
+
         (simple-service 'emacs-init-symlink
-          home-activation-service-type
-          #~(let* ((home   (getenv "HOME"))
-                   (link   (string-append home "/.config/emacs/init.el"))
-                   (target (string-append home "/Projects/guix-system/home/files/emacs-init.el")))
-              (mkdir-p (string-append home "/.config/emacs"))
-              (when (file-exists? link)
-                (delete-file link))
-              (symlink target link)))
+                        home-activation-service-type
+                        #~(let* ((home   (getenv "HOME"))
+                                 (link   (string-append home "/.config/emacs/init.el"))
+                                 (target (string-append home "/Projects/guix-system/home/files/emacs-init.el")))
+                            (mkdir-p (string-append home "/.config/emacs"))
+                            (when (file-exists? link)
+                              (delete-file link))
+                            (symlink target link)))
 
         (service home-xdg-configuration-files-service-type
           `(("gdb/gdbinit" ,%default-gdbinit)

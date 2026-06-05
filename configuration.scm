@@ -14,8 +14,10 @@
   (gnu packages bittorrent)
   (gnu packages chromium)
   (gnu packages cmake)
+  (gnu packages commencement)
   (gnu packages compression)
   (gnu packages curl)
+  (gnu packages djvu)
   (gnu packages dns)
   (gnu packages education)
   (gnu packages fcitx5)
@@ -24,12 +26,14 @@
   (gnu packages fonts)
   (gnu packages freedesktop)
   (gnu packages games)
+  (gnu packages gcc)
   (gnu packages gimp)
   (gnu packages gnome)
   (gnu packages golang)
   (gnu packages golang-apps)
   (gnu packages guile-xyz)
   (gnu packages graphics)
+  (gnu packages image)
   (gnu packages kde-graphics)
   (gnu packages kde-internet)
   (gnu packages kde-plasma)
@@ -41,10 +45,13 @@
   (gnu packages linux)
   (gnu packages lxqt)
   (gnu packages llvm)
+  (gnu packages markup)
   (gnu packages music)
   (gnu packages networking)
   (gnu packages nushell)
   (gnu packages package-management)
+  (gnu packages pdf)
+  (gnu packages pkg-config)
   (gnu packages pulseaudio)
   (gnu packages qt)
   (gnu packages racket)
@@ -109,8 +116,8 @@
                (lambda (port)
                  (display "#!/bin/sh\n" port)
                  (display "GUIX_DIR=\"$HOME/Projects/guix-system\"\n" port)
-                 (display "sudo guix system reconfigure -L \"$GUIX_DIR\" \"$GUIX_DIR/configuration.scm\"\n" port)
-                 (display "guix home reconfigure -L \"$GUIX_DIR\" \"$GUIX_DIR/guix-home-config.scm\"\n" port)
+                 (display "sudo guix system reconfigure -L \"$GUIX_DIR\" \"$GUIX_DIR/configuration.scm\" && \\\n" port)
+                 (display "guix home reconfigure -L \"$GUIX_DIR\" \"$GUIX_DIR/guix-home-config.scm\" && \\\n" port)
                  (display "kbuildsycoca6 --noincremental\n" port)))
              (chmod script #o755))))))
     (synopsis "System reconfigure script")
@@ -200,7 +207,15 @@
    autoconf
    automake
    gnu-make
+   markdown
    sysconf-script
+   gcc-toolchain
+   pkg-config
+   poppler
+   libpng
+   zlib
+   djvulibre
+   djview
 
    ;; multimedia
    ffmpeg

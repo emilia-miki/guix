@@ -1,5 +1,6 @@
 (define-module (home emacs)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages rust)
   #:use-module (gnu packages tree-sitter)
   #:export (%emacs-packages))
@@ -7,6 +8,7 @@
 (define %emacs-packages
   (list
    emacs
+   emacs-pdf-tools
    ;; Standard library source for rust-analyzer goto-definition
    (list rust "rust-src")
    ;; Tree-sitter grammars

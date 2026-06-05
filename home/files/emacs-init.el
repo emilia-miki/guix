@@ -1,5 +1,8 @@
 ;;; init.el -*- lexical-binding: t -*-
 
+(add-to-list 'load-path
+  (expand-file-name "~/.guix-home/profile/share/emacs/site-lisp/pdf-tools-1.3.0"))
+
 ;; ── straight.el bootstrap ──────────────────────────────────────────
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -187,11 +190,33 @@
 ;; ── Dired stuff ──────────────────────────────────
 (use-package dired-preview
   :hook (dired-mode . dired-preview-mode)
+        (dired-preview . (lambda ()
+                           (dired-preview-with-window
+                             (when (eq major-mode 'image-mode)
+                               (image-transform-fit-to-window)))))
   :config (setq dired-preview-delay 0)
-          (setq dired-preview-max-size 5242880))
+          (setq dired-preview-max-size 104057600)
+          (setq dired-preview-ignored-extensions-regexp
+                (replace-regexp-in-string "\\\\|pdf" ""
+                                          (replace-regexp-in-string "\\\\|epub" "" dired-preview-ignored-extensions-regexp))))
 
 (use-package pdf-tools
+  :straight nil
+  :ensure t
   :config (pdf-tools-install))
+
+(use-package nov
+  :config
+  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
+
+(use-package djvu
+  :config
+  (add-to-list 'auto-mode-alist '("\\.djvu\\'" . djvu-read-mode))
+  :hook (djvu-read-mode . djvu-image-mode))
+
+;; (use-package pdf-tools
+;; :straight nil
+;; :config (pdf-tools-install))
 
 ;; ── Editor basics ──────────────────────────────────────────────────
 (setq-default indent-tabs-mode nil tab-width 4 truncate-lines t)
@@ -201,6 +226,7 @@
 (global-auto-revert-mode 1)
 (electric-pair-mode 1)
 (pixel-scroll-precision-mode 1)
+(setq pixel-scroll-precision-interpolate-page t)
 (recentf-mode 1)
 (save-place-mode 1)
 (column-number-mode 1)
