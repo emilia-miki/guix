@@ -214,10 +214,6 @@
   (add-to-list 'auto-mode-alist '("\\.djvu\\'" . djvu-read-mode))
   :hook (djvu-read-mode . djvu-image-mode))
 
-;; (use-package pdf-tools
-;; :straight nil
-;; :config (pdf-tools-install))
-
 ;; ── Editor basics ──────────────────────────────────────────────────
 (setq-default indent-tabs-mode nil tab-width 4 truncate-lines t)
 (set-face-attribute 'default nil :height 180)
@@ -225,8 +221,8 @@
       make-backup-files nil auto-save-default nil create-lockfiles nil)
 (global-auto-revert-mode 1)
 (electric-pair-mode 1)
-(pixel-scroll-precision-mode 1)
-(setq pixel-scroll-precision-interpolate-page t)
+(pixel-scroll-precision-mode -1)
+(setq pixel-scroll-precision-interpolate-page nil)
 (recentf-mode 1)
 (save-place-mode 1)
 (column-number-mode 1)
