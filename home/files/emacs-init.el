@@ -228,7 +228,16 @@
 (use-package wgrep)   ;; press e in any grep/consult-ripgrep buffer to edit in place
 
 ;; ── Terminal emulator/shell stuff ──────────────────────────────────
-(use-package eat)
+(use-package eat
+  :custom (eat-term-name "xterm-256color")
+  :config (eat-eshell-mode 1)
+  :hook ((eat-mode    . (lambda ()
+                          (face-remap-add-relative 'default :family "DejaVu Sans Mono")))
+         (eshell-mode . (lambda ()
+                          (face-remap-add-relative 'default :family "DejaVu Sans Mono")))))
+(defun eshell/clear ()
+  (let ((inhibit-read-only t))
+    (erase-buffer)))
 
 ;; ── Dired stuff ──────────────────────────────────
 (use-package dired-preview
@@ -255,9 +264,25 @@
   (add-to-list 'auto-mode-alist '("\\.djvu\\'" . djvu-read-mode))
   :hook (djvu-read-mode . djvu-image-mode))
 
+(use-package inheritenv)
+
+(use-package claude-code
+  :ensure (:host github :repo "stevemolitor/claude-code.el" :depth 1)
+  :config (claude-code-mode)
+  :bind ("C-c c" . claude-code))
+
 ;; ── Editor basics ──────────────────────────────────────────────────
 (setq-default indent-tabs-mode nil tab-width 4 truncate-lines t)
-(set-face-attribute 'default nil :height 140)
+
+(defvar my/font-name "Fira Code")
+(defvar my/font-height 140)
+
+(defun my/set-font ()
+  (when (find-font (font-spec :name my/font-name))
+    (set-face-attribute 'default nil :family my/font-name :height my/font-height :weight 'regular)))
+
+(my/set-font)
+(add-hook 'server-after-make-frame-hook #'my/set-font)
 (setq ring-bell-function 'ignore use-short-answers t
       make-backup-files nil auto-save-default nil create-lockfiles nil)
 (global-auto-revert-mode 1)
