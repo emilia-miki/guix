@@ -53,6 +53,8 @@
   (gnu packages pdf)
   (gnu packages pkg-config)
   (gnu packages pulseaudio)
+  (gnu packages python)
+  (gnu packages python-check)
   (gnu packages qt)
   (gnu packages racket)
   (gnu packages readline)
@@ -202,6 +204,8 @@
    rust-analyzer
    go
    gopls
+   ruff
+   python
    relax-player
    xdg-utils
    autoconf
@@ -273,7 +277,7 @@
    kcalc
    kfind
    filelight
-   kdeconnect
+;;   kdeconnect
    kleopatra
    gwenview
    okular
