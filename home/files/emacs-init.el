@@ -230,7 +230,7 @@
 ;; ── Terminal emulator/shell stuff ──────────────────────────────────
 (use-package eat
   :custom (eat-term-name "xterm-256color")
-  :config (eat-eshell-mode 1)
+  :config (ignore-errors (eat-eshell-mode 1))
   :hook ((eat-mode    . (lambda ()
                           (face-remap-add-relative 'default :family "DejaVu Sans Mono")))
          (eshell-mode . (lambda ()
@@ -239,9 +239,92 @@
   (let ((inhibit-read-only t))
     (erase-buffer)))
 
+;; ── TRAMP ────────────────────────────────────────
+(use-package tramp
+  :ensure nil
+  :config
+  (add-to-list 'tramp-connection-properties
+               (list (regexp-quote "/ssh:work:") "session-timeout" nil))
+  (setq remote-file-name-inhibit-locks t
+        tramp-use-scp-direct-remote-copying t
+        remote-file-name-inhibit-auto-save-visited t
+        tramp-use-ssh-controlmaster-options nil)
+  (setq tramp-copy-size-limit (* 1024 1024) ;; 1MB
+      tramp-verbose 2)
+
+  (connection-local-set-profile-variables
+   'remote-direct-async-process
+   '((tramp-direct-async-process . t)))
+
+  (connection-local-set-profiles
+   '(:application tramp :protocol "scp")
+   'remote-direct-async-process)
+
+  (setq magit-tramp-pipe-stty-settings 'pty)
+
+  (with-eval-after-load 'tramp
+    (with-eval-after-load 'compile
+      (remove-hook 'compilation-mode-hook #'tramp-compile-disable-ssh-controlmaster-options)))
+
+  ;; don't show the diff by default in the commit buffer. Use `C-c C-d' to display it
+  (setq magit-commit-show-diff nil)
+
+  ;; don't show git variables in magit branch
+  (setq magit-branch-direct-configure nil)
+
+  ;; don't automatically refresh the status buffer after running a git command
+  (setq magit-refresh-status-buffer nil)
+
+  (defun memoize-remote (key cache orig-fn &rest args)
+    "Memoize a value if the key is a remote path."
+    (if (and key
+             (file-remote-p key))
+        (if-let ((current (assoc key (symbol-value cache))))
+            (cdr current)
+          (let ((current (apply orig-fn args)))
+            (set cache (cons (cons key current) (symbol-value cache)))
+            current))
+      (apply orig-fn args)))
+
+  ;; Memoize current project
+  (defvar project-current-cache nil)
+  (defun memoize-project-current (orig &optional prompt directory)
+    (memoize-remote (or directory
+                        project-current-directory-override
+                        default-directory)
+                    'project-current-cache orig prompt directory))
+  (advice-add 'project-current :around #'memoize-project-current)
+
+  ;; Memoize magit top level
+  (defvar magit-toplevel-cache nil)
+  (defun memoize-magit-toplevel (orig &optional directory)
+    (memoize-remote (or directory default-directory)
+                    'magit-toplevel-cache orig directory))
+  (advice-add 'magit-toplevel :around #'memoize-magit-toplevel)
+
+  ;; memoize vc-git-root
+  (defvar vc-git-root-cache nil)
+  (defun memoize-vc-git-root (orig file)
+    (let ((value (memoize-remote (file-name-directory file) 'vc-git-root-cache orig file)))
+      ;; sometimes vc-git-root returns nil even when there is a root there
+      (when (null (cdr (car vc-git-root-cache)))
+        (setq vc-git-root-cache (cdr vc-git-root-cache)))
+      value))
+  (advice-add 'vc-git-root :around #'memoize-vc-git-root)
+
+  ;; memoize all git candidates in the current project
+  (defvar $counsel-git-cands-cache nil)
+  (defun $memoize-counsel-git-cands (orig dir)
+    ($memoize-remote (magit-toplevel dir) '$counsel-git-cands-cache orig dir))
+  (advice-add 'counsel-git-cands :around #'$memoize-counsel-git-cands))
+
 ;; ── Dired stuff ──────────────────────────────────
+(defun my/dired-preview-maybe-enable ()
+  (unless (file-remote-p default-directory)
+    (dired-preview-mode 1)))
+
 (use-package dired-preview
-  :hook (dired-mode . dired-preview-mode)
+  :hook (dired-mode . my/dired-preview-maybe-enable)
         (dired-preview . (lambda ()
                            (dired-preview-with-window
                              (when (eq major-mode 'image-mode)
@@ -266,9 +349,14 @@
 
 (use-package inheritenv)
 
+(use-package monet
+  :ensure (:host github :repo "stevemolitor/monet"))
+
 (use-package claude-code
   :ensure (:host github :repo "stevemolitor/claude-code.el" :depth 1)
-  :config (claude-code-mode)
+  :config (add-hook 'claude-code-process-environment-functions #'monet-start-server-function)
+          (monet-mode 1)
+          (claude-code-mode)
   :bind ("C-c c" . claude-code))
 
 ;; ── Editor basics ──────────────────────────────────────────────────
@@ -296,6 +384,7 @@
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
+(add-to-list 'default-frame-alist '(alpha-background . 90))
 
 ;; copy/paste via wl-clipboard so that clipboard works in terminals
 (when (executable-find "wl-copy")
