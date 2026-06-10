@@ -12,7 +12,7 @@ CursorShape=0
 [General]
 AlternatingBackground=1
 AlternatingBars=1
-Command=tmux new -t main
+Command=bash
 ErrorBackground=1
 ErrorBars=1
 Name=Custom

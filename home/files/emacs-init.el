@@ -267,13 +267,13 @@
       (remove-hook 'compilation-mode-hook #'tramp-compile-disable-ssh-controlmaster-options)))
 
   ;; don't show the diff by default in the commit buffer. Use `C-c C-d' to display it
-  (setq magit-commit-show-diff nil)
+  ;; (setq magit-commit-show-diff nil)
 
   ;; don't show git variables in magit branch
-  (setq magit-branch-direct-configure nil)
+  ;; (setq magit-branch-direct-configure nil)
 
   ;; don't automatically refresh the status buffer after running a git command
-  (setq magit-refresh-status-buffer nil)
+  ;; (setq magit-refresh-status-buffer nil)
 
   (defun memoize-remote (key cache orig-fn &rest args)
     "Memoize a value if the key is a remote path."
@@ -320,7 +320,8 @@
 
 ;; ── Dired stuff ──────────────────────────────────
 (defun my/dired-preview-maybe-enable ()
-  (unless (file-remote-p default-directory)
+  (if (file-remote-p default-directory)
+      (dired-preview-mode -1)
     (dired-preview-mode 1)))
 
 (use-package dired-preview
@@ -374,6 +375,7 @@
 (setq ring-bell-function 'ignore use-short-answers t
       make-backup-files nil auto-save-default nil create-lockfiles nil)
 (global-auto-revert-mode 1)
+(global-visual-line-mode 1)
 (electric-pair-mode 1)
 (pixel-scroll-precision-mode -1)
 (setq pixel-scroll-precision-interpolate-page nil)
@@ -387,21 +389,35 @@
 (add-to-list 'default-frame-alist '(alpha-background . 90))
 
 ;; copy/paste via wl-clipboard so that clipboard works in terminals
-(when (executable-find "wl-copy")
+(when-let ((wl-copy-path (executable-find "wl-copy"))
+           (wl-paste-path (executable-find "wl-paste")))
   (defun wl-copy (text)
     (let ((proc (make-process :name "wl-copy"
                               :buffer nil
-                              :command '("wl-copy" "-f" "-n")
+                              :command (list wl-copy-path "-f" "-n")
                               :connection-type 'pipe
                               :noquery t)))
       (process-send-string proc text)
       (process-send-eof proc)))
   (defun wl-paste ()
-    (shell-command-to-string "wl-paste -n | tr -d \r"))
+    (with-temp-buffer
+      (call-process wl-paste-path nil t nil "-n")
+      (replace-regexp-in-string "\r" "" (buffer-string))))
   (add-hook 'after-init-hook
             (lambda ()
               (setq interprogram-cut-function #'wl-copy)
               (setq interprogram-paste-function #'wl-paste))))
+
+;; ── Code hygiene ───────────────────────────────────────────────────
+(use-package indent-bars
+  :hook (prog-mode . indent-bars-mode)
+  :config (setq indent-bars-treesit-support t
+                indent-bars-no-descend-string t
+                indent-bars-treesit-ignore-blank-lines-types '("module")))
+
+(use-package whitespace
+  :hook (prog-mode . whitespace-mode)
+  :config (setq whitespace-style '(face trailing empty)))
 
 ;; ── Discoverability ────────────────────────────────────────────────
 (use-package which-key :config (which-key-mode 1))

@@ -47,6 +47,7 @@
   (gnu packages llvm)
   (gnu packages markup)
   (gnu packages music)
+  (gnu packages ncurses)
   (gnu packages networking)
   (gnu packages nushell)
   (gnu packages package-management)
@@ -178,6 +179,7 @@
 
    ;; terminal tools
    file
+   ncurses
    curl
    git
    direnv
@@ -230,6 +232,7 @@
    tenacity
 
    ;; build tools
+   zlib
    unzip
    libtool
    cmake
