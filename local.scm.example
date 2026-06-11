@@ -9,6 +9,7 @@
             %vpn-username
             %vpn-password
             %ovpn-name
+            %ovpn-connection-id
             %ovpn-config))
 
 ;; Add entries like: (host "1.2.3.4" "hostname.example.com")
@@ -33,5 +34,6 @@
 (define-public %vpn-username "vpn-username")
 (define-public %vpn-password "vpn-password")
 (define-public %ovpn-name "/profile.ovpn")
+(define-public %ovpn-connection-id "my-vpn")
 
 (define-public %ovpn-config "<openvpn config string>")

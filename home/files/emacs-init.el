@@ -363,7 +363,8 @@
 ;; ── Editor basics ──────────────────────────────────────────────────
 (setq-default indent-tabs-mode nil tab-width 4 truncate-lines t)
 
-(defvar my/font-name "Fira Code")
+;;(defvar my/font-name "Fira Code")
+(defvar my/font-name "Berkeley Mono")
 (defvar my/font-height 140)
 
 (defun my/set-font ()

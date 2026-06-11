@@ -103,11 +103,13 @@ ForegroundVisited=78,81,172
 
 [General]
 AccentColor=233,58,154
+ColorScheme=DexyColorDarkModerateCyan
 ColorSchemeHash=89b4768fc8a09b1b110c1a5fd6a8203b4ccc8f17
 LastUsedCustomAccentColor=233,58,154
+widgetStyle=Breeze
 
 [Icons]
-Theme=Dexy-Color-Dark-Icons
+Theme=breeze-dark
 
 [KDE]
 LookAndFeelPackage=org.kde.breezedark.desktop

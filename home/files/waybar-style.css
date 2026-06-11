@@ -1,0 +1,95 @@
+@import "./rose-pine.css";
+
+* {
+  /* reference the color by using @color-name */
+  /* background: @base; */
+  background: rgba(25, 23, 36, 0.3);
+  font-family: "FiraCode Nerd Font";
+  /* padding-left: 5px; */
+  /* padding-right: 5px; */
+  /* margin-left: 5px; */
+  /* margin-right: 5px; */
+  /* margin: 5px; */
+  /* border: 1px solid @overlay; */
+}
+
+.modules-right * {
+  padding-left: 2px;
+  padding-right: 2px;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+
+/* #workspaces button { */
+	/* background-color: @highlightLow; */
+/* } */
+
+/* #workspaces button * { */
+	/* background-color: @highlightLow; */
+/* } */
+
+#cava {
+  color: @iris;
+}
+
+#workspaces button {
+  color: @iris;
+}
+
+#workspaces button.focused {
+	background-color: @highlightHigh;
+}
+
+#workspaces button.focused * {
+	background-color: @highlightHigh;
+}
+
+#window {
+  color: @iris;
+}
+
+#bluetooth {
+  color: @foam;
+}
+
+#idle_inhibitor {
+  color: @love;
+}
+
+#pulseaudio {
+  color: @gold;
+}
+
+#network {
+  color: @rose;
+}
+
+#backlight {
+  color: @pine;
+}
+
+#battery {
+  color: @foam;
+}
+
+#clock {
+  color: @iris;
+}
+
+#tray {
+  color: @rose;
+}
+
+#custom-power {
+  color: @love;
+}
+
+menu {
+	border-radius: 15px;
+	background: @base;
+	color: @iris;
+}
+
+menuitem {
+	border-radius: 15px;
+}

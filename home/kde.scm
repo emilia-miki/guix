@@ -1,9 +1,12 @@
+;; KDE home services. To switch back to KDE from Sway:
+;;   1. In guix-home-config.scm: replace %sway-services with %kde-services
+;;   2. In home/shell.scm: uncomment the kbuildsycoca6 line in sysconf
+;;   3. See kde.scm (root) for the system-level checklist.
 (define-module (home kde)
   #:use-module (gnu home services)
   #:use-module (gnu services)
   #:use-module (guix gexp)
-  #:use-module (guix packages)
-  #:use-module (guix download)
+  #:use-module (home wallpaper)
   #:export (%kde-services))
 
 (define-public %kde-services
@@ -170,11 +173,7 @@ Categories=Network;WebBrowser;
       #~(begin
           (use-modules (guix utils) (ice-9 textual-ports))
           (let* ((home     (getenv "HOME"))
-                 (wallpaper #$(origin
-                               (method url-fetch)
-                               (uri "https://w.wallhaven.cc/full/x1/wallhaven-x1z2jz.jpg")
-                               (file-name "dark-souls-3-kiln-of-the-first-flame-uhd-4k-wallpaper.jpg")
-                               (sha256 (base32 "1150sf8nq23hwl1jhgv8anl29b8zq58pfvwzh6v3dd6zmla6qf2s"))))
+                 (wallpaper #$%wallpaper)
                  (panel-template #$(local-file "files/plasma-panel.ini"))
                  (config-dir (string-append home "/.config")))
             (define (write-config name content)

@@ -16,10 +16,12 @@
   #:use-module (home work)
   #:use-module (home emacs)
   #:use-module (home fcitx5)
+  #:use-module (home wallpaper)
+  #:use-module (home sway)
   #:use-module (gnu home services xdg))
 
 (define %gtk-settings
-  "[Settings]\ngtk-application-prefer-dark-theme=1\ngtk-cursor-theme-name=Adwaita\ngtk-cursor-theme-size=24\n")
+  "[Settings]\ngtk-application-prefer-dark-theme=1\ngtk-cursor-theme-name=Adwaita\ngtk-cursor-theme-size=24\ngtk-icon-theme-name=breeze-dark\n")
 
 (home-environment
   (inherit asahi-home-environment)
@@ -60,6 +62,9 @@
             ("nano/nanorc" ,%default-nanorc)))
         (service home-xdg-user-directories-service-type))
 
+      ;; Desktop environment services — swap to switch:
+      ;; Sway: %sway-services  KDE: %kde-services
+      %sway-services
       %shell-services
       %tools-services
       %helix-services

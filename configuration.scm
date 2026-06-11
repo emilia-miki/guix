@@ -3,6 +3,7 @@
 (use-modules
   (srfi srfi-1)
   (asahi guix systems plasma)
+  (asahi guix systems sway)
   (asahi guix packages linux)
   (btv tailscale)
   (gnu)
@@ -70,14 +71,22 @@
   (gnu packages vpn)
   (gnu packages xdisorg)
   (gnu packages display-managers)
+  (gnu services)
   (gnu services cups)
   (gnu services desktop)
   (gnu services guix)
+  (gnu services networking)
   (gnu services sddm)
   (gnu system)
+  (gnu packages image-viewers)
+  (gnu packages irc)
+  (gnu packages syndication)
   (gnu system locale)
   (guix build-system trivial)
+  (guix gexp)
   (guix packages)
+  (kde)
+  (sway)
   (packages audacity)
   (packages blender)
   (packages claude-code)
@@ -120,16 +129,35 @@
                  (display "#!/bin/sh\n" port)
                  (display "GUIX_DIR=\"$HOME/Projects/guix-system\"\n" port)
                  (display "sudo guix system reconfigure -L \"$GUIX_DIR\" \"$GUIX_DIR/configuration.scm\" && \\\n" port)
-                 (display "guix home reconfigure -L \"$GUIX_DIR\" \"$GUIX_DIR/guix-home-config.scm\" && \\\n" port)
-                 (display "kbuildsycoca6 --noincremental\n" port)))
+                 (display "guix home reconfigure -L \"$GUIX_DIR\" \"$GUIX_DIR/guix-home-config.scm\"\n" port)
+                 ;; Uncomment when using KDE:
+                 ;; (display " && kbuildsycoca6 --noincremental\n" port)
+                 ))
              (chmod script #o755))))))
     (synopsis "System reconfigure script")
     (description "Reconfigures Guix system and home.")
     (license #f)
     (home-page "")))
 
+(define %nm-vpn-tailscale-script
+  (let ((src (plain-file "10-vpn-tailscale-route"
+               (string-append
+                 "#!/bin/sh\n"
+                 "[ \"$2\" = \"vpn-up\" ] || exit 0\n"
+                 "[ \"$CONNECTION_ID\" = \"" %ovpn-connection-id "\" ] || exit 0\n"
+                 "/run/current-system/profile/sbin/ip route add "
+                 %thinkcentre-ssh-hostname
+                 "/32 dev tailscale0 2>/dev/null || true\n"))))
+    (computed-file "10-vpn-tailscale-route"
+      #~(begin
+          (copy-file #$src #$output)
+          (chmod #$output #o755)))))
+
+;; To switch to Sway: change inherit to asahi-sway-os, swap package list to
+;;   (append %sway-packages ... %sway-os-packages)
+;; To switch back to KDE: revert both, see kde.scm for the full checklist.
 (operating-system
- (inherit asahi-plasma-os)
+ (inherit asahi-sway-os)
  (timezone "Europe/Kyiv")
  (locale "en_DK.UTF-8")
  (locale-definitions
@@ -144,7 +172,10 @@
           (home-directory "/home/miki"))
          %base-user-accounts))
  (services
-  (cons* (service tailscale-service-type)
+  (cons* (extra-special-file
+           "/etc/NetworkManager/dispatcher.d/10-vpn-tailscale-route"
+           %nm-vpn-tailscale-script)
+         (service tailscale-service-type)
          (service bluetooth-service-type)
          (service cups-service-type)
          (simple-service 'extra-hosts
@@ -153,8 +184,9 @@
          (simple-service 'wayland-env
                          session-environment-service-type
                          '(("QT_QPA_PLATFORM" . "wayland")
+                           ("QT_QPA_PLATFORM_PLUGIN_PATH" . "/run/current-system/profile/lib/qt6/plugins/platforms")
                            ("GDK_BACKEND" . "wayland,x11")))
-         (modify-services (operating-system-user-services asahi-plasma-os)
+         (modify-services (operating-system-user-services asahi-sway-os)
                           (delete guix-home-service-type)
                           (guix-service-type config =>
                                              (guix-configuration
@@ -166,6 +198,10 @@
                                                (append (list (plain-file "non-guix.pub"
                                                                          "(public-key (ecc (curve Ed25519) (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)))"))
                                                        %default-authorized-guix-keys))))
+                          (network-manager-service-type config =>
+                                                        (network-manager-configuration
+                                                         (inherit config)
+                                                         (vpn-plugins (list network-manager-openvpn))))
                           (sddm-service-type config =>
                                              (sddm-configuration
                                               (inherit config)
@@ -254,6 +290,7 @@
 
    ;; network
    openvpn
+   network-manager-openvpn
    openresolv
    tailscale
 
@@ -274,60 +311,27 @@
    qt5compat
    qtmultimedia
 
-   ;; KDE apps
-   ark
-   kate
-   kcalc
-   kfind
-   filelight
-;;   kdeconnect
-   kleopatra
-   gwenview
-   okular
-   haruna
+   ;; KDE apps (kept regardless of desktop)
    kamoso
-   kmail
-   korganizer
-   merkuro
-   kaddressbook
-   kaccounts-integration
-   kaccounts-providers
-   kalarm
-   neochat
-   kget
    krdc
-   kdegraphics-thumbnailers
    kcolorchooser
    kcharselect
-   plasma-browser-integration
+   kolourpaint
 
    ;; GUI apps
    feishin
-   akregator
+   imv
    moonlight-qt
-   dolphin
-   kolourpaint
-   konversation
    wireshark
    qbittorrent
+   qtwayland
    obs
-   papers
-   blender-wayland
+   ;; blender-wayland  ; TODO: re-enable once OOM build issue on aarch64 is fixed
    gimp
    ;; krita
-   klavaro
    flatpak
-
-   ;; languages / runtimes
-   racket
    qmk
-
-   dexy-plasma-themes
-
-   ;; system
    bluez
-   pavucontrol-qt
-   power-profiles-daemon
 
    ;; fonts
    font-awesome
@@ -343,8 +347,11 @@
    font-bitstream-vera        ;; ttf_bitstream_vera
    ;; carlito, source-code-pro — check guix names
 
-   (remove (lambda (p) (equal? "kitty" (package-name p)))
-           (operating-system-packages asahi-plasma-os))))
+   ;; WM-specific packages (swap when switching desktops):
+   ;; KDE: (append %kde-system-packages ...)
+   ;; Sway: (append %sway-packages ...)
+   (append %sway-packages
+           %sway-os-packages)))
  (file-systems
   (cons* (file-system
           (device (uuid "848E-1AEE" 'fat32))
