@@ -21,6 +21,7 @@
   (gnu packages djvu)
   (gnu packages dns)
   (gnu packages education)
+  (gnu packages elf)
   (gnu packages fcitx5)
   (gnu packages file)
   (gnu packages firmware)
@@ -205,7 +206,14 @@
                           (sddm-service-type config =>
                                              (sddm-configuration
                                               (inherit config)
-                                              (theme "enfield"))))))
+                                              (theme "enfield")))
+                          (elogind-service-type config =>
+                                               (elogind-configuration
+                                                (inherit config)
+                                                (handle-lid-switch 'ignore)
+                                                (handle-lid-switch-external-power 'ignore)
+                                                (handle-suspend-key 'ignore)
+                                                (handle-hibernate-key 'ignore))))))
  (packages
   (cons*
    ;; browsers
@@ -240,6 +248,8 @@
    (list isc-bind "utils") ;; provides nslookup, dig, host
    rust
    rust-analyzer
+   uv
+   patchelf
    go
    gopls
    ruff

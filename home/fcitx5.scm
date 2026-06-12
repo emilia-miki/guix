@@ -50,7 +50,7 @@ ModifierOnlyKeyTimeout=250
 [Behavior]
 ActiveByDefault=False
 resetStateWhenFocusIn=No
-ShareInputState=No
+ShareInputState=All
 PreeditEnabledByDefault=True
 ShowInputMethodInformation=True
 showInputMethodInformationWhenFocusIn=False

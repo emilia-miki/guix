@@ -139,7 +139,9 @@
 ;; ── LSP with Eglot ─────────────────────────────────────────────────
 (use-package eglot
   :ensure nil
-  :hook ((rust-mode . eglot-ensure) (rust-ts-mode . eglot-ensure))
+  :hook ((rust-mode . eglot-ensure) (rust-ts-mode . eglot-ensure)
+         (c-mode . eglot-ensure) (c-ts-mode . eglot-ensure)
+         (c++-mode . eglot-ensure) (c++-ts-mode . eglot-ensure))
   :bind (("C-c a" . eglot-code-actions)
          ("C-c n" . eglot-rename)
          ("C-c =" . eglot-format-buffer)
@@ -158,14 +160,31 @@
                    . ("rust-analyzer"
                       :initializationOptions
                       (:cargo (:sysroot ,sysroot
-                               :sysroot-src ,(expand-file-name "lib/rustlib/src/rust/library" sysroot))
-                       :procMacro (:server
-                                   ,(when ra
-                                      (expand-file-name
-                                       "libexec/rust-analyzer-proc-macro-srv"
-                                       (file-name-directory
-                                        (directory-file-name
-                                         (file-name-directory ra))))))))))))
+                                        :sysroot-src ,(expand-file-name "lib/rustlib/src/rust/library" sysroot))
+                              :procMacro (:server
+                                          ,(when ra
+                                             (expand-file-name
+                                              "libexec/rust-analyzer-proc-macro-srv"
+                                              (file-name-directory
+                                               (directory-file-name
+                                                (file-name-directory ra))))))))))))
+
+(use-package eglot-python-preset
+  :ensure t
+  :custom
+  (eglot-python-preset-lsp-server 'rass)
+  (eglot-python-preset-rass-tools '(basedpyright ruff)))
+
+(defun my/eglot-python-preset-setup ()
+  (when (and (file-remote-p default-directory)
+             (eq eglot-python-preset-lsp-server 'rass))
+    (setq-local eglot-python-preset-rass-command
+                (list "rass"
+                      (concat (file-local-name (project-root (project-current)))
+                              ".rass-preset.py")))))
+
+(add-hook 'python-mode-hook #'my/eglot-python-preset-setup)
+(add-hook 'python-ts-mode-hook #'my/eglot-python-preset-setup)
 
 ;; ── In-buffer completion ───────────────────────────────────────────
 (use-package corfu
@@ -240,31 +259,29 @@
     (erase-buffer)))
 
 ;; ── TRAMP ────────────────────────────────────────
+(setq vc-handled-backends '(Git))
 (use-package tramp
   :ensure nil
   :config
   (add-to-list 'tramp-connection-properties
                (list (regexp-quote "/ssh:work:") "session-timeout" nil))
-  (setq remote-file-name-inhibit-locks t
-        tramp-use-scp-direct-remote-copying t
-        remote-file-name-inhibit-auto-save-visited t
-        tramp-use-ssh-controlmaster-options nil)
-  (setq tramp-copy-size-limit (* 1024 1024) ;; 1MB
-      tramp-verbose 2)
+  (setq ;; tramp-use-scp-direct-remote-copying t  ; breaks directory listing
+        ;; remote-file-name-inhibit-locks t
+        ;; remote-file-name-inhibit-auto-save-visited t
+        ;; tramp-copy-size-limit (* 1024 1024)
+        ;; magit-tramp-pipe-stty-settings 'pty
+        tramp-use-ssh-controlmaster-options nil
+        tramp-verbose 2)
 
-  (connection-local-set-profile-variables
-   'remote-direct-async-process
-   '((tramp-direct-async-process . t)))
+  ;; (connection-local-set-profile-variables
+  ;;  'remote-direct-async-process
+  ;;  '((tramp-direct-async-process . t)))
+  ;; (connection-local-set-profiles
+  ;;  '(:application tramp :protocol "scp")
+  ;;  'remote-direct-async-process)
 
-  (connection-local-set-profiles
-   '(:application tramp :protocol "scp")
-   'remote-direct-async-process)
-
-  (setq magit-tramp-pipe-stty-settings 'pty)
-
-  (with-eval-after-load 'tramp
-    (with-eval-after-load 'compile
-      (remove-hook 'compilation-mode-hook #'tramp-compile-disable-ssh-controlmaster-options)))
+  ;; (with-eval-after-load 'compile
+  ;;   (remove-hook 'compilation-mode-hook #'tramp-compile-disable-ssh-controlmaster-options))
 
   ;; don't show the diff by default in the commit buffer. Use `C-c C-d' to display it
   ;; (setq magit-commit-show-diff nil)
@@ -348,6 +365,31 @@
   (add-to-list 'auto-mode-alist '("\\.djvu\\'" . djvu-read-mode))
   :hook (djvu-read-mode . djvu-image-mode))
 
+;; ── RSS ───────────────────────────────────────────────────────────
+(use-package elfeed
+  :bind ("C-c e" . elfeed)
+  :custom
+  (elfeed-feeds '("https://coopi.neocities.org/feed.xml"
+                  "https://lobste.rs/rss"
+                  "https://news.ycombinator.com/rss"
+                  "https://guix.gnu.org/feeds/blog.atom"
+                  "https://lwn.net/headlines/rss"
+                  "https://planet.emacslife.com/atom.xml"
+                  "https://www.phoronix.com/rss.php"))
+  (elfeed-search-filter "@6-months-ago +unread"))
+
+;; ── IRC ───────────────────────────────────────────────────────────
+(use-package erc
+  :ensure nil  ; built-in
+  :custom
+  (erc-autojoin-timing 'ident)
+  (erc-fill-function 'erc-fill-static)
+  (erc-fill-static-center 20)
+  (erc-hide-list '("JOIN" "PART" "QUIT"))
+  (erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"))
+  (erc-nick "miki")
+  (erc-use-auth-source-plugin t))
+
 (use-package inheritenv)
 
 (use-package monet
@@ -418,11 +460,29 @@
 
 (use-package whitespace
   :hook (prog-mode . whitespace-mode)
-  :config (setq whitespace-style '(face trailing empty)))
+  :config (setq whitespace-style '(face trailing empty tabs tab-mark space-before-tab)))
 
 ;; ── Discoverability ────────────────────────────────────────────────
 (use-package which-key :config (which-key-mode 1))
 
+(use-package envrc
+  :init
+  (setq envrc-direnv-executable
+        (or (executable-find "direnv") "direnv"))
+  :config
+  (defun my/envrc--remote-direnv-advice (orig-fun env-dir)
+    (let ((envrc-direnv-executable
+           (if (file-remote-p env-dir)
+               (file-local-name
+                (expand-file-name "~/.guix-profile/bin/direnv" env-dir))
+             envrc-direnv-executable)))
+      (funcall orig-fun env-dir)))
+  (advice-add 'envrc--export :around #'my/envrc--remote-direnv-advice)
+  :hook ((find-file  . envrc-mode)
+         (dired-mode . envrc-mode)))
+
 ;; ── Server ─────────────────────────────────────────────────────────
 (unless (bound-and-true-p server-process)
   (server-start))
+
+

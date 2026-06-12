@@ -2,8 +2,10 @@
   #:use-module (gnu home)
   #:use-module (gnu home services)
   #:use-module (gnu home services desktop)
+  #:use-module (gnu home services gnupg)
   #:use-module (gnu services)
   #:use-module (guix gexp)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu system shadow)
   #:use-module (asahi guix home config)
   #:use-module (asahi guix home services sound)
@@ -29,6 +31,11 @@
     (append
       (list
         (service home-dbus-service-type)
+        (service home-gpg-agent-service-type
+          (home-gpg-agent-configuration
+            (ssh-support? #t)
+            (pinentry-program
+              (file-append pinentry-qt "/bin/pinentry-qt"))))
         (service home-pipewire-service-type)
 
         ;; Emacs packages

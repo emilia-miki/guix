@@ -446,9 +446,13 @@ connect_wifi() {
 	if echo "$1" | grep -q -e "^$icon_on VPN " -e "^$icon_off VPN "; then
 		vpn="$(echo "$1" | sed "s/^$icon_on VPN //" | sed "s/^$icon_off VPN //")"
 		if nmcli connection show --active | grep -q "$vpn"; then
-			nmcli connection down "$vpn"
+			nmcli connection down "$vpn" &&
+                send_notification 2 3 "$tr_notice_disconnected_summary" "$tr_notice_disconnected_vpn_body" ||
+                send_notification 3 4 "$tr_notice_error_summary" "$tr_notice_error_vpn_disconnection_body"
 		else
-			nmcli connection up "$vpn" passwd-file "$HOME/.vpn/$vpn.passwd"
+			nmcli connection up "$vpn" &&
+                send_notification 1 3 "$tr_notice_connected_summary" "$tr_notice_connected_vpn_body" ||
+                send_notification 3 4 "$tr_notice_error_summary" "$tr_notice_error_vpn_connection_body"
 		fi
 		exit 0
 	fi
