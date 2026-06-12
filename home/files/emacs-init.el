@@ -63,6 +63,8 @@
 (use-package transient
   :ensure (:host github :repo "magit/transient"))
 
+(elpaca-wait)
+
 ;; ── Theme ──────────────────────────────────────────────────────────
 (load-theme 'modus-vivendi t)
 
@@ -401,6 +403,10 @@
           (monet-mode 1)
           (claude-code-mode)
   :bind ("C-c c" . claude-code))
+
+(setq ring-bell-function
+      (lambda ()
+        (call-process "notify-send" nil 0 nil "Claude" "Needs attention")))
 
 ;; ── Editor basics ──────────────────────────────────────────────────
 (setq-default indent-tabs-mode nil tab-width 4 truncate-lines t)

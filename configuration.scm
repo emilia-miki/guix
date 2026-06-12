@@ -130,7 +130,8 @@
                  (display "#!/bin/sh\n" port)
                  (display "GUIX_DIR=\"$HOME/Projects/guix-system\"\n" port)
                  (display "sudo guix system reconfigure -L \"$GUIX_DIR\" \"$GUIX_DIR/configuration.scm\" && \\\n" port)
-                 (display "guix home reconfigure -L \"$GUIX_DIR\" \"$GUIX_DIR/guix-home-config.scm\"\n" port)
+                 (display "guix home reconfigure -L \"$GUIX_DIR\" \"$GUIX_DIR/guix-home-config.scm\" && \\\n" port)
+                 (display "guix describe -f channels > \"$GUIX_DIR/channels.lock.scm\"\n" port)
                  ;; Uncomment when using KDE:
                  ;; (display " && kbuildsycoca6 --noincremental\n" port)
                  ))

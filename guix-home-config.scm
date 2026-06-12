@@ -64,9 +64,18 @@
                               (delete-file link))
                             (symlink target link)))
 
+        (simple-service 'channels-scm-symlink
+                        home-activation-service-type
+                        #~(let* ((home   (getenv "HOME"))
+                                 (link   (string-append home "/.config/guix/channels.scm"))
+                                 (target (string-append home "/Projects/guix-system/channels.scm")))
+                            (when (file-exists? link)
+                              (delete-file link))
+                            (symlink target link)))
+
         (service home-xdg-configuration-files-service-type
-          `(("gdb/gdbinit" ,%default-gdbinit)
-            ("nano/nanorc" ,%default-nanorc)))
+                 `(("gdb/gdbinit" ,%default-gdbinit)
+                   ("nano/nanorc" ,%default-nanorc)))
         (service home-xdg-user-directories-service-type))
 
       ;; Desktop environment services — swap to switch:
