@@ -101,7 +101,6 @@
   (packages helix)
   (packages marksman)
   (packages mprocs)
-  (packages nyxt)
   (packages presenterm)
   (packages relax-player)
   (packages skate)
@@ -232,7 +231,6 @@
    ;; browsers
    librewolf
    ungoogled-chromium/wayland
-   nyxt
 
    ;; terminal tools
    file
