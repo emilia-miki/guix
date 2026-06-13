@@ -28,6 +28,7 @@ exec dbus-update-activation-environment --all
 exec waybar
 exec fcitx5 -d
 exec gpg-connect-agent updatestartuptty /bye
+exec brightnessctl -d kbd_backlight s 100%
 # exec_always swaymsg border none
 
 ### Output configuration

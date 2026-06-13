@@ -4,7 +4,7 @@
 (setq package-enable-at-startup nil)
 
 (add-to-list 'load-path
-  (expand-file-name "~/.guix-home/profile/share/emacs/site-lisp/pdf-tools-1.3.0"))
+             (expand-file-name "~/.guix-home/profile/share/emacs/site-lisp/pdf-tools-1.3.0"))
 
 ;; ── elpaca bootstrap ───────────────────────────────────────────────
 (defvar elpaca-installer-version 0.12)
@@ -96,9 +96,6 @@
   :config
   (add-hook 'go-mode-hook    (lambda () (setq-local indent-tabs-mode t)))
   (add-hook 'go-ts-mode-hook (lambda () (setq-local indent-tabs-mode t))))
-
-(use-package markdown-mode :mode "\\.\\(md\\|markdown\\)\\'"
-  :hook (markdown-mode . eglot-ensure))
 
 (use-package python-mode :mode "\\.py\\'"
   :hook ((python-mode . eglot-ensure) (python-ts-mode . eglot-ensure)))
@@ -215,7 +212,6 @@
           (python-mode . python-ts-mode)
           (rust-mode       . rust-ts-mode)
           (typescript-mode . typescript-ts-mode)
-;;          (markdown-mode   . markdown-ts-mode)
           (yaml-mode       . yaml-ts-mode)))
   (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode)))
 
@@ -237,7 +233,7 @@
 
 ;; ── Navigation ────────────────────────────────────────────────────
 (use-package avy
-  :bind (("C-c j" . avy-goto-char-2)   ;; type 2 chars → jump (like Helix f/t)
+  :bind (("C-c j" . avy-goto-char-2) ;; type 2 chars → jump (like Helix f/t)
          ("M-g g" . avy-goto-line)))    ;; jump to visible line; digits fall back to goto-line
 
 ;; ── Undo / Redo ───────────────────────────────────────────────────
@@ -268,12 +264,12 @@
   (add-to-list 'tramp-connection-properties
                (list (regexp-quote "/ssh:work:") "session-timeout" nil))
   (setq ;; tramp-use-scp-direct-remote-copying t  ; breaks directory listing
-        ;; remote-file-name-inhibit-locks t
-        ;; remote-file-name-inhibit-auto-save-visited t
-        ;; tramp-copy-size-limit (* 1024 1024)
-        ;; magit-tramp-pipe-stty-settings 'pty
-        tramp-use-ssh-controlmaster-options nil
-        tramp-verbose 2)
+   ;; remote-file-name-inhibit-locks t
+   ;; remote-file-name-inhibit-auto-save-visited t
+   ;; tramp-copy-size-limit (* 1024 1024)
+   ;; magit-tramp-pipe-stty-settings 'pty
+   tramp-use-ssh-controlmaster-options nil
+   tramp-verbose 2)
 
   ;; (connection-local-set-profile-variables
   ;;  'remote-direct-async-process
@@ -345,15 +341,15 @@
 
 (use-package dired-preview
   :hook (dired-mode . my/dired-preview-maybe-enable)
-        (dired-preview . (lambda ()
-                           (dired-preview-with-window
-                             (when (eq major-mode 'image-mode)
-                               (image-transform-fit-to-window)))))
+  (dired-preview . (lambda ()
+                     (dired-preview-with-window
+                       (when (eq major-mode 'image-mode)
+                         (image-transform-fit-to-window)))))
   :config (setq dired-preview-delay 0)
-          (setq dired-preview-max-size 104057600)
-          (setq dired-preview-ignored-extensions-regexp
-                (replace-regexp-in-string "\\\\|pdf" ""
-                                          (replace-regexp-in-string "\\\\|epub" "" dired-preview-ignored-extensions-regexp))))
+  (setq dired-preview-max-size 104057600)
+  (setq dired-preview-ignored-extensions-regexp
+        (replace-regexp-in-string "\\\\|pdf" ""
+                                  (replace-regexp-in-string "\\\\|epub" "" dired-preview-ignored-extensions-regexp))))
 
 (use-package pdf-tools
   :config (pdf-tools-install))
@@ -382,7 +378,7 @@
 
 ;; ── IRC ───────────────────────────────────────────────────────────
 (use-package erc
-  :ensure nil  ; built-in
+  :ensure nil                           ; built-in
   :custom
   (erc-autojoin-timing 'ident)
   (erc-fill-function 'erc-fill-static)
@@ -400,8 +396,8 @@
 (use-package claude-code
   :ensure (:host github :repo "stevemolitor/claude-code.el" :depth 1)
   :config (add-hook 'claude-code-process-environment-functions #'monet-start-server-function)
-          (monet-mode 1)
-          (claude-code-mode)
+  (monet-mode 1)
+  (claude-code-mode)
   :bind ("C-c c" . claude-code))
 
 (setq ring-bell-function

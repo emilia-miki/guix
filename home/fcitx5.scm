@@ -1,11 +1,14 @@
 (define-module (home fcitx5)
   #:use-module (gnu home services)
+  #:use-module (gnu packages fcitx5)
   #:use-module (gnu services)
   #:use-module (guix gexp)
+  #:use-module (packages fcitx5-rose-pine)
   #:export (%fcitx5-services))
 
 (define %fcitx5-config
-  "[Hotkey]
+  "\
+[Hotkey]
 EnumerateWithTriggerKeys=True
 EnumerateForwardKeys=
 EnumerateBackwardKeys=
@@ -70,7 +73,8 @@ AutoSavePeriod=30
 ")
 
 (define %fcitx5-profile
-  "[Groups/0]
+  "\
+[Groups/0]
 Name=Default
 Default Layout=us
 DefaultIM=keyboard-ua
@@ -92,7 +96,8 @@ Layout=
 ")
 
 (define %fcitx5-classicui
-  "Vertical Candidate List=False
+  "\
+Vertical Candidate List=False
 WheelForPaging=True
 Font=\"Sans 10\"
 MenuFont=\"Sans 10\"
@@ -112,7 +117,8 @@ EnableFractionalScale=True
 ")
 
 (define %fcitx5-hangul
-  "Keyboard=Dubeolsik
+  "\
+Keyboard=Dubeolsik
 AutoReorder=True
 WordCommit=False
 HanjaMode=False
@@ -135,20 +141,26 @@ HanjaMode=False
 ")
 
 (define %fcitx5-clipboard
-  "[Trigger Key]
+  "\
+[Trigger Key]
 ")
 
 (define-public %fcitx5-services
   (list
-    (simple-service 'fcitx5-xdg-config
-      home-xdg-configuration-files-service-type
-      `(("fcitx5/config"
-         ,(plain-file "fcitx5-config" %fcitx5-config))
-        ("fcitx5/profile"
-         ,(plain-file "fcitx5-profile" %fcitx5-profile))
-        ("fcitx5/conf/classicui.conf"
-         ,(plain-file "fcitx5-classicui.conf" %fcitx5-classicui))
-        ("fcitx5/conf/hangul.conf"
-         ,(plain-file "fcitx5-hangul.conf" %fcitx5-hangul))
-        ("fcitx5/conf/clipboard.conf"
-         ,(plain-file "fcitx5-clipboard.conf" %fcitx5-clipboard))))))
+   (simple-service 'fcitx5-packages
+                   home-profile-service-type
+                   (list fcitx5 fcitx5-gtk fcitx5-gtk4 fcitx5-qt fcitx5-anthy
+                         fcitx5-hangul fcitx5-rose-pine fcitx5-configtool))
+
+   (simple-service 'fcitx5-xdg-config
+                   home-xdg-configuration-files-service-type
+                   `(("fcitx5/config"
+                      ,(plain-file "fcitx5-config" %fcitx5-config))
+                     ("fcitx5/profile"
+                      ,(plain-file "fcitx5-profile" %fcitx5-profile))
+                     ("fcitx5/conf/classicui.conf"
+                      ,(plain-file "fcitx5-classicui.conf" %fcitx5-classicui))
+                     ("fcitx5/conf/hangul.conf"
+                      ,(plain-file "fcitx5-hangul.conf" %fcitx5-hangul))
+                     ("fcitx5/conf/clipboard.conf"
+                      ,(plain-file "fcitx5-clipboard.conf" %fcitx5-clipboard))))))

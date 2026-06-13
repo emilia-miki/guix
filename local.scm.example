@@ -6,11 +6,11 @@
             %thinkcentre-ssh-hostname
             %ssh-private-key
             %ssh-public-key
-            %vpn-username
-            %vpn-password
-            %ovpn-name
+            %wifi-connection-id
+            %wifi-nmconnection
             %ovpn-connection-id
-            %ovpn-config))
+            %vpn-ca-cert
+            %nmconnection))
 
 ;; Add entries like: (host "1.2.3.4" "hostname.example.com")
 (define-public %local-hosts
@@ -31,9 +31,72 @@
 (define-public %ssh-public-key
   "ssh-ed25519 AAAA... user@host\n")
 
-(define-public %vpn-username "vpn-username")
-(define-public %vpn-password "vpn-password")
-(define-public %ovpn-name "/profile.ovpn")
+;; Output of: sudo cat /etc/NetworkManager/system-connections/<wifi>.nmconnection
+(define-public %wifi-connection-id "My-WiFi-SSID")
+
+(define-public %wifi-nmconnection
+  "[connection]
+id=My-WiFi-SSID
+uuid=<uuid>
+type=wifi
+
+[wifi]
+mode=infrastructure
+ssid=My-WiFi-SSID
+
+[wifi-security]
+key-mgmt=wpa-psk
+psk=<password>
+
+[ipv4]
+method=auto
+
+[ipv6]
+addr-gen-mode=stable-privacy
+method=auto
+
+[proxy]
+")
+
+;; Output of: sudo cat /etc/NetworkManager/system-connections/<vpn>.nmconnection
+;; Output of: sudo cat /root/.cert/nm-openvpn/<vpn>-ca.pem
 (define-public %ovpn-connection-id "my-vpn")
 
-(define-public %ovpn-config "<openvpn config string>")
+(define-public %vpn-ca-cert
+  "-----BEGIN CERTIFICATE-----
+<ca certificate here>
+-----END CERTIFICATE-----
+")
+
+(define-public %nmconnection
+  (string-append
+    "[connection]\n"
+    "id=" %ovpn-connection-id "\n"
+    "uuid=<uuid>\n"
+    "type=vpn\n"
+    "\n"
+    "[vpn]\n"
+    "auth=<auth>\n"
+    "ca=/etc/NetworkManager/certs/" %ovpn-connection-id "-ca.pem\n"
+    "cipher=<cipher>\n"
+    "connection-type=password\n"
+    "dev=tun\n"
+    "password-flags=0\n"
+    "proto-tcp=yes\n"
+    "remote=vpn.example.com:1194\n"
+    "service-type=org.freedesktop.NetworkManager.openvpn\n"
+    "user-name=<username>\n"
+    "\n"
+    "[vpn-secrets]\n"
+    "password=<password>\n"
+    "\n"
+    "[ipv4]\n"
+    "method=auto\n"
+    "never-default=true\n"
+    "\n"
+    "[ipv6]\n"
+    "addr-gen-mode=default\n"
+    "method=auto\n"
+    "never-default=true\n"
+    "\n"
+    "[proxy]\n"))

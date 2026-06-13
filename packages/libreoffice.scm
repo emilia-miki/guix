@@ -11,16 +11,16 @@
 ;; LibreOffice Base, but all other components build and work fine.
 (define-public libreoffice-aarch64
   (package
-    (inherit libreoffice)
-    (name "libreoffice")
-    (inputs
-      (modify-inputs (package-inputs libreoffice)
-        (delete "firebird")))
-    (arguments
-      (substitute-keyword-arguments (package-arguments libreoffice)
-        ((#:configure-flags flags)
-         #~(map (lambda (f)
-                  (if (string=? f "--enable-firebird-sdbc")
-                      "--disable-firebird-sdbc"
-                      f))
-                #$flags))))))
+   (inherit libreoffice)
+   (name "libreoffice")
+   (inputs
+    (modify-inputs (package-inputs libreoffice)
+                   (delete "firebird")))
+   (arguments
+    (substitute-keyword-arguments (package-arguments libreoffice)
+                                  ((#:configure-flags flags)
+                                   #~(map (lambda (f)
+                                            (if (string=? f "--enable-firebird-sdbc")
+                                                "--disable-firebird-sdbc"
+                                                f))
+                                          #$flags))))))

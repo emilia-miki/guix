@@ -18,52 +18,52 @@
 
 (define aventho-a2dp-watcher
   (program-file "aventho-a2dp-watcher"
-    #~(begin
-        (use-modules (ice-9 popen) (ice-9 rdelim))
+                #~(begin
+                    (use-modules (ice-9 popen) (ice-9 rdelim))
 
-        (define (connect-a2dp!)
-          (sleep 1) ; let BlueZ settle after the connection event
-          (system* #$(file-append dbus "/bin/dbus-send")
-                   "--system"
-                   "--dest=org.bluez"
-                   #$%aventho-device-path
-                   "org.bluez.Device1.ConnectProfile"
-                   #$(string-append "string:" %aventho-a2dp-uuid)))
+                    (define (connect-a2dp!)
+                      (sleep 1) ; let BlueZ settle after the connection event
+                      (system* #$(file-append dbus "/bin/dbus-send")
+                               "--system"
+                               "--dest=org.bluez"
+                               #$%aventho-device-path
+                               "org.bluez.Device1.ConnectProfile"
+                               #$(string-append "string:" %aventho-a2dp-uuid)))
 
-        (let ((port (open-pipe*
-                      OPEN_READ
-                      #$(file-append dbus "/bin/dbus-monitor")
-                      "--system"
-                      #$(string-append
-                          "type='signal',"
-                          "interface='org.freedesktop.DBus.Properties',"
-                          "path='" %aventho-device-path "'"))))
-          (let loop ((expecting #f))
-            (let ((line (read-line port)))
-              (unless (eof-object? line)
-                (cond
-                  ((string-contains line "\"Connected\"")
-                   (loop #t))
-                  ((and expecting (string-contains line "boolean true"))
-                   (connect-a2dp!)
-                   (loop #f))
-                  ((and expecting (string-contains line "boolean"))
-                   (loop #f)) ; Connected=false, ignore
-                  (else
-                   (loop expecting))))))))))
+                    (let ((port (open-pipe*
+                                 OPEN_READ
+                                 #$(file-append dbus "/bin/dbus-monitor")
+                                 "--system"
+                                 #$(string-append
+                                    "type='signal',"
+                                    "interface='org.freedesktop.DBus.Properties',"
+                                    "path='" %aventho-device-path "'"))))
+                      (let loop ((expecting #f))
+                        (let ((line (read-line port)))
+                          (unless (eof-object? line)
+                            (cond
+                             ((string-contains line "\"Connected\"")
+                              (loop #t))
+                             ((and expecting (string-contains line "boolean true"))
+                              (connect-a2dp!)
+                              (loop #f))
+                             ((and expecting (string-contains line "boolean"))
+                              (loop #f)) ; Connected=false, ignore
+                             (else
+                              (loop expecting))))))))))
 
 (define-public %bluetooth-services
   (list
-    (simple-service 'aventho-a2dp
-      home-shepherd-service-type
-      (list
-        (shepherd-service
-          (provision '(aventho-a2dp))
-          (documentation
-            "Auto-connect A2DP profile when AVENTHO 100 headphones connect.")
-          (start #~(make-forkexec-constructor
-                     (list #$aventho-a2dp-watcher)
-                     #:log-file (string-append (getenv "HOME")
-                                               "/.local/var/log/aventho-a2dp.log")))
-          (stop #~(make-kill-destructor))
-          (respawn? #t))))))
+   (simple-service 'aventho-a2dp
+                   home-shepherd-service-type
+                   (list
+                    (shepherd-service
+                     (provision '(aventho-a2dp))
+                     (documentation
+                      "Auto-connect A2DP profile when AVENTHO 100 headphones connect.")
+                     (start #~(make-forkexec-constructor
+                               (list #$aventho-a2dp-watcher)
+                               #:log-file (string-append (getenv "HOME")
+                                                         "/.local/var/log/aventho-a2dp.log")))
+                     (stop #~(make-kill-destructor))
+                     (respawn? #t))))))
