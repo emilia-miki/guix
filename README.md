@@ -19,6 +19,5 @@ i'm a very messy person and my config is very messy. generally here's what is in
   * moonlight for "better VNC" over LAN
   * remmina for VNC
   * imv, mpv for media
+  * preview-app - MacOS-like Preview app for document signing
   * libreoffice, wireshark, OBS, blender, audacity, gimp - self-explanatory
-
-TODO: package https://github.com/mahdy-nasr/ocr-and-signer-for-linux/ for document signing

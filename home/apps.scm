@@ -25,6 +25,7 @@
   #:use-module (packages blender)
   #:use-module (packages feishin)
   #:use-module (packages libreoffice)
+  #:use-module (packages preview-app)
   #:export (%apps-services))
 
 (define %applications-menu
@@ -48,7 +49,7 @@
                     ;; file management
                     dolphin ark udiskie
                     ;; office
-                    libreoffice-aarch64
+                    libreoffice-aarch64 preview-app
                     ;; graphics
                     gimp blender-wayland
                     ;; network/remote
