@@ -70,6 +70,7 @@ AutoSavePeriod=30
 
 [Behavior/DisabledAddons]
 0=notificationitem
+1=clipboard
 ")
 
 (define %fcitx5-profile
