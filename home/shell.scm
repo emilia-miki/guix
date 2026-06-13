@@ -8,7 +8,20 @@
   (list
     (simple-service 'shell-bash-config
       home-files-service-type
-      `((".bashrc"
+      `((".bash_profile"
+         ,(plain-file "bash_profile"
+            "# Guix Home sets up the user environment and starts the shepherd daemon
+[ -f ~/.profile ] && . ~/.profile
+
+# Source .bashrc for interactive login shells
+[ -f ~/.bashrc ] && . ~/.bashrc
+
+# Auto-start Sway on first TTY at login
+if [ -z \"$WAYLAND_DISPLAY\" ] && [ \"$(tty)\" = \"/dev/tty1\" ]; then
+  exec sway
+fi
+"))
+        (".bashrc"
          ,(plain-file "bashrc"
             "eval \"$(starship init bash)\"
 eval \"$(zoxide init bash)\"
@@ -48,33 +61,4 @@ use_venv() {
         ("starship.toml"
          ,(plain-file "starship.toml"
             "[character]\nsuccess_symbol = '[λ](bold green)'\nerror_symbol = '[λ](bold red)'\n"))
-        ("nushell/env.nu"
-         ,(plain-file "env.nu"
-            "# Local bin and Cargo
-$env.PATH = ($env.PATH | prepend $\"($env.HOME)/.local/bin\" | prepend $\"($env.HOME)/.cargo/bin\")
-
-# Starship prompt init
-mkdir ~/.cache/starship
-starship init nu | save -f ~/.cache/starship/init.nu
-
-# Zoxide init
-zoxide init nushell | save -f ~/.zoxide.nu
-"))
-        ("nushell/config.nu"
-         ,(plain-file "config.nu"
-            "# Starship prompt
-use ~/.cache/starship/init.nu
-
-# Zoxide
-source ~/.zoxide.nu
-
-alias em = emacsclient -nw
-
-def sysconf [] {
-  let guix = $\"($env.HOME)/Projects/guix-system\"
-  sudo guix system reconfigure -L $guix $\"($guix)/configuration.scm\"
-  guix home reconfigure -L $guix $\"($guix)/guix-home-config.scm\"
-  guix describe -f channels | save --force $\"($guix)/channels.lock.scm\"
-  kbuildsycoca6 --noincremental
-}
-"))))))
+))))

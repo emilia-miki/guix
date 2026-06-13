@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+import subprocess, sys
+
+def main():
+    ucd = "/run/current-system/profile/share/ucd/UnicodeData.txt"
+    entries = []
+    with open(ucd) as f:
+        for line in f:
+            fields = line.strip().split(';')
+            if len(fields) < 2:
+                continue
+            hex_cp, name = fields[0], fields[1]
+            if name.startswith('<'):
+                continue
+            cp = int(hex_cp, 16)
+            if cp < 0x20 or 0x7F <= cp <= 0x9F:
+                continue
+            entries.append(f"{chr(cp)}  U+{hex_cp:<6}  {name}")
+
+    result = subprocess.run(
+        ["wofi", "--show", "dmenu", "-i", "-p", "Unicode"],
+        input="\n".join(entries),
+        capture_output=True, text=True
+    )
+    if not result.stdout.strip():
+        return
+    subprocess.run(["wl-copy"], input=result.stdout.strip()[0], text=True)
+
+main()

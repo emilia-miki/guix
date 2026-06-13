@@ -24,6 +24,7 @@
                 'pre #$%wallpaper 'post)
               port))))))
 
+
 (define-public %sway-services
   (list
     (simple-service 'sway-packages
@@ -33,11 +34,14 @@
     (simple-service 'sway-env
       home-environment-variables-service-type
       '(("XCURSOR_THEME" . "Adwaita")
-        ;; 36 = 24 logical px * 1.5 display scale; GTK3 loads cursors in physical px
-        ("XCURSOR_SIZE" . "36")
-        ;; gtk3 platform theme reads color-scheme from dconf (prefer-dark), so
-        ;; QStyleHints::colorScheme() returns Dark and Breeze renders in dark mode.
-        ("QT_QPA_PLATFORMTHEME" . "gtk3")))
+        ;; GTK3 multiplies XCURSOR_SIZE by wl_output.scale=2 (integer rounding of 1.5),
+        ;; so 18×2=36px matches sway's seat cursor of 24 logical×1.5=36px physical.
+        ("XCURSOR_SIZE" . "18")
+        ("QT_QPA_PLATFORMTHEME" . "qt6ct")
+        ;; Force libadwaita dark mode directly; belt-and-suspenders in case the
+        ;; xdg-desktop-portal-gtk Settings backend isn't running yet at app launch.
+        ("ADW_DEBUG_COLOR_SCHEME" . "prefer-dark")
+        ))
 
     (simple-service 'sway-xdg-config
       home-xdg-configuration-files-service-type
@@ -55,6 +59,8 @@
          ,(executable-file "wifimenu" (local-file "files/waybar-wifimenu")))
         ("waybar/wofi-bluetooth"
          ,(executable-file "wofi-bluetooth" (local-file "files/waybar-wofi-bluetooth")))
+        ("sway/wofi-unicode"
+         ,(executable-file "wofi-unicode" (local-file "files/wofi-unicode")))
         ("mako/config"
          ,(local-file "files/mako-config"))
         ("foot/foot.ini"
@@ -70,29 +76,51 @@
             "[preferred]
 default=wlr
 org.freedesktop.impl.portal.Settings=gtk
+org.freedesktop.impl.portal.FileChooser=gtk
 "))
 
-;;         ("qt6ct/qt6ct.conf"
-;;          ,(plain-file "qt6ct.conf"
-;;             "[Appearance]
-;; color_scheme_path=~/.config/qt6ct/colors/dexy-dark.conf
-;; custom_palette=true
-;; icon_theme=breeze-dark
-;; standard_dialogs=default
-;; style=Fusion
-;; "))
+        ("Kvantum/kvantum.kvconfig"
+         ,(plain-file "kvantum.kvconfig"
+            "[General]
+theme=rose-pine-love
+respect_DE=false
+"))
+        ))
 
-;;         ("qt6ct/colors/dexy-dark.conf"
-;;          ,(plain-file "dexy-dark.conf"
-;;             ;; Colors derived from Trolltech.conf / KDE kdeglobals dark theme.
-;;             ;; Format: #AARRGGBB, roles follow QPalette order:
-;;             ;; WindowText, Button, Light, Midlight, Dark, Mid, Text, BrightText,
-;;             ;; ButtonText, Base, Window, Shadow, Highlight, HighlightedText,
-;;             ;; Link, LinkVisited, AlternateBase, NoRole, ToolTipBase, ToolTipText,
-;;             ;; PlaceholderText
-;;             "[ColorScheme]
-;; active_colors=#ffd3dae3, #ff161925, #ff373f5d, #ff2b3048, #ff0b0c12, #ff131620, #ffd3dae3, #ffffffff, #ffc3c7d1, #ff161925, #ff161925, #ff08090d, #ffa93076, #ffffffff, #fff7bcd4, #ff7cb7ff, #ff141a21, #ff000000, #ff171b28, #ffd3dae3, #ffa6acba
-;; disabled_colors=#ff545863, #ff151823, #ffd9dbe6, #ffacb1cb, #ff8b93ba, #ff5e6b9f, #ff545863, #ffffffff, #ff4f525d, #ff151823, #ff151823, #ffacb1cb, #ff151823, #ff545863, #ff604e5e, #ff374d6c, #ff13191f, #ff000000, #ff171b28, #ffd3dae3, #ff454955
-;; inactive_colors=#ffd3dae3, #ff161925, #ff373f5d, #ff2b3048, #ff0b0c12, #ff131620, #ffd3dae3, #ffffffff, #ffc3c7d1, #ff161925, #ff161925, #ff08090d, #ff4a1938, #ffd3dae3, #fff7bcd4, #ff7cb7ff, #ff141a21, #ff000000, #ff171b28, #ffd3dae3, #ffa6acba
-;; "))
-        ))))
+    (simple-service 'qt6ct-conf
+      home-activation-service-type
+      #~(let ((path (string-append (getenv "HOME") "/.config/qt6ct/qt6ct.conf")))
+          (call-with-output-file path
+            (lambda (port)
+              (display
+                (string-append
+                  "[Appearance]\n"
+                  "custom_palette=false\n"
+                  "icon_theme=rose-pine-icons\n"
+                  "standard_dialogs=default\n"
+                  "style=kvantum\n"
+                  "\n"
+                  "[Fonts]\n"
+                  "fixed=\"Noto Sans,12,-1,5,400,0,0,0,0,0,0,0,0,0,0,1\"\n"
+                  "general=\"Noto Sans,12,-1,5,400,0,0,0,0,0,0,0,0,0,0,1\"\n"
+                  "\n"
+                  "[Interface]\n"
+                  "activate_item_on_single_click=1\n"
+                  "buttonbox_layout=0\n"
+                  "cursor_flash_time=1000\n"
+                  "dialog_buttons_have_icons=1\n"
+                  "double_click_interval=400\n"
+                  "gui_effects=@Invalid()\n"
+                  "keyboard_scheme=2\n"
+                  "menus_have_icons=true\n"
+                  "show_shortcuts_in_context_menus=true\n"
+                  "stylesheets=@Invalid()\n"
+                  "toolbutton_style=4\n"
+                  "underline_shortcut=1\n"
+                  "wheel_scroll_lines=3\n"
+                  "\n"
+                  "[Troubleshooting]\n"
+                  "force_raster_widgets=1\n"
+                  "ignored_applications=@Invalid()\n")
+                port)))))))
+

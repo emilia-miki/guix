@@ -37,5 +37,7 @@
           (append wayland wayland-protocols libxkbcommon)))
       (arguments
         (substitute-keyword-arguments (package-arguments blender*)
+          ;; Serial build to avoid OOM on aarch64 during parallel compilation.
+          ((#:parallel-build? _) #f)
           ((#:configure-flags flags)
            #~(append #$flags (list "-DWITH_GHOST_WAYLAND=ON" "-DWITH_GHOST_X11=OFF"))))))))

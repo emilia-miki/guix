@@ -2,7 +2,6 @@
 
 (use-modules
   (srfi srfi-1)
-  (asahi guix systems plasma)
   (asahi guix systems sway)
   (asahi guix packages linux)
   (btv tailscale)
@@ -43,6 +42,7 @@
   (gnu packages kde-pim)
   (gnu packages kde-systemtools)
   (gnu packages kde-utils)
+  (gnu packages libreoffice)
   (gnu packages librewolf)
   (gnu packages linux)
   (gnu packages lxqt)
@@ -51,7 +51,6 @@
   (gnu packages music)
   (gnu packages ncurses)
   (gnu packages networking)
-  (gnu packages nushell)
   (gnu packages package-management)
   (gnu packages pdf)
   (gnu packages pkg-config)
@@ -68,6 +67,7 @@
   (gnu packages tmux)
   (gnu packages version-control)
   (gnu packages video)
+  (gnu packages unicode)
   (gnu packages vnc)
   (gnu packages vpn)
   (gnu packages xdisorg)
@@ -91,6 +91,7 @@
   (packages audacity)
   (packages blender)
   (packages claude-code)
+  (packages libreoffice)
   (packages dexy-themes)
   (packages dua)
   (packages dust)
@@ -98,13 +99,11 @@
   (packages feishin)
   (packages glow)
   (packages helix)
-  (packages lem)
   (packages marksman)
   (packages mprocs)
   (packages nyxt)
   (packages presenterm)
   (packages relax-player)
-  (packages sddm-qylock)
   (packages skate)
   (packages uutils-coreutils)
   (packages xh)
@@ -155,11 +154,15 @@
           (copy-file #$src #$output)
           (chmod #$output #o755)))))
 
-;; To switch to Sway: change inherit to asahi-sway-os, swap package list to
-;;   (append %sway-packages ... %sway-os-packages)
-;; To switch back to KDE: revert both, see kde.scm for the full checklist.
 (operating-system
  (inherit asahi-sway-os)
+ ;; Rose Pine main palette for the virtual console, active from boot
+ ;; (including the login prompt). Colors 0-7 = normal, 8-15 = bright.
+ (kernel-arguments
+  (append (operating-system-user-kernel-arguments asahi-sway-os)
+          '("vt.default_red=25,38,49,246,156,196,235,224,82,235,49,246,156,196,235,224"
+            "vt.default_grn=23,35,116,193,207,167,188,222,79,111,116,193,207,167,188,222"
+            "vt.default_blu=36,58,143,119,216,231,186,244,103,146,143,119,216,231,186,244")))
  (timezone "Europe/Kyiv")
  (locale "en_DK.UTF-8")
  (locale-definitions
@@ -178,11 +181,17 @@
            "/etc/NetworkManager/dispatcher.d/10-vpn-tailscale-route"
            %nm-vpn-tailscale-script)
          (service tailscale-service-type)
-         (service bluetooth-service-type)
+         (service bluetooth-service-type
+                          (bluetooth-configuration
+                           (auto-enable? #t)))
          (service cups-service-type)
          (simple-service 'extra-hosts
                          hosts-service-type
                          %local-hosts)
+         (simple-service 'editor-env
+                         session-environment-service-type
+                         '(("EDITOR" . "emacsclient -nw")
+                           ("VISUAL" . "emacsclient -nw")))
          (simple-service 'wayland-env
                          session-environment-service-type
                          '(("QT_QPA_PLATFORM" . "wayland")
@@ -204,10 +213,13 @@
                                                         (network-manager-configuration
                                                          (inherit config)
                                                          (vpn-plugins (list network-manager-openvpn))))
-                          (sddm-service-type config =>
-                                             (sddm-configuration
-                                              (inherit config)
-                                              (theme "enfield")))
+                          (delete sddm-service-type)
+                          ;; ter-124b: Terminus 24px bold — 1.5× the default 16px
+                          (console-font-service-type _ =>
+                                                     (map (lambda (tty)
+                                                            (cons tty (file-append font-terminus
+                                                                                   "/share/consolefonts/ter-124b.psf.gz")))
+                                                          '("tty1" "tty2" "tty3" "tty4" "tty5" "tty6")))
                           (elogind-service-type config =>
                                                (elogind-configuration
                                                 (inherit config)
@@ -235,7 +247,6 @@
    ripgrep
    ripgrep-all
    eza
-   nushell
    bat
    gitui
    starship
@@ -245,7 +256,6 @@
    inotify-tools
    tmux
    helix-steel
-   lem
    (list isc-bind "utils") ;; provides nslookup, dig, host
    rust
    rust-analyzer
@@ -276,7 +286,6 @@
    cava
    mpv
    audacity-wayland
-   tenacity
 
    ;; build tools
    zlib
@@ -317,17 +326,10 @@
    mprocs
    presenterm
 
-   ;; login
-   sddm-qylock-enfield
-   qt5compat
-   qtmultimedia
+   font-terminus
 
    ;; KDE apps (kept regardless of desktop)
-   kamoso
-   krdc
-   kcolorchooser
-   kcharselect
-   kolourpaint
+   dolphin
 
    ;; GUI apps
    feishin
@@ -337,7 +339,15 @@
    qbittorrent
    qtwayland
    obs
-   ;; blender-wayland  ; TODO: re-enable once OOM build issue on aarch64 is fixed
+   remmina
+   hyprpicker
+   ucd
+   libreoffice-aarch64
+   ark
+   gsettings-desktop-schemas
+   udiskie
+   swappy
+   blender-wayland
    gimp
    ;; krita
    flatpak
@@ -358,9 +368,6 @@
    font-bitstream-vera        ;; ttf_bitstream_vera
    ;; carlito, source-code-pro — check guix names
 
-   ;; WM-specific packages (swap when switching desktops):
-   ;; KDE: (append %kde-system-packages ...)
-   ;; Sway: (append %sway-packages ...)
    (append %sway-packages
            %sway-os-packages)))
  (file-systems

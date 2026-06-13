@@ -15,8 +15,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu system)
   #:use-module (guix packages)
-  #:use-module (packages dexy-themes)
-  #:use-module (srfi srfi-1)
+#:use-module (srfi srfi-1)
   #:export (%sway-packages %sway-os-packages))
 
 ;; Sway-specific packages. Add to the packages list in configuration.scm.
@@ -37,11 +36,9 @@
    ;; Portals (screen sharing, file pickers)
    xdg-desktop-portal xdg-desktop-portal-wlr xdg-desktop-portal-gtk
    ;; Theming
-   qt5ct qt6ct qtsvg font-nerd-symbols breeze breeze-icons dexy-plasma-themes
+   qt5ct qt6ct qtsvg font-nerd-symbols breeze breeze-icons
    ;; Audio
-   pavucontrol-qt
-   ;; Document viewer
-   zathura))
+   pavucontrol-qt))
 
 ;; Base packages from asahi-sway-os (kitty excluded).
 ;; Use as the last argument to cons* in the packages field, replacing
